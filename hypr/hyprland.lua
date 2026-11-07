@@ -50,11 +50,13 @@ safe_dofile(home .. "/.config/hypr/components/notifications.lua")
 -- still not valid, skip applying the theme this pass instead of crashing.
 -- noctalia.lua is generated on each host and not in the repo, so a fresh clone
 -- has no such file until Noctalia writes it; pcall keeps that from erroring.
-local _, noctalia = pcall(require, "noctalia")
-if type(noctalia) ~= "table" then
+-- Keep the literal require("noctalia") below: Noctalia looks for it and appends
+-- its own unguarded copy when it is missing.
+local ok, noctalia = pcall(function() return require("noctalia") end)
+if not ok or type(noctalia) ~= "table" then
     package.loaded["noctalia"] = nil
-    _, noctalia = pcall(require, "noctalia")
+    ok, noctalia = pcall(function() return require("noctalia") end)
 end
-if type(noctalia) == "table" and noctalia.apply_theme then
+if ok and type(noctalia) == "table" and noctalia.apply_theme then
     noctalia.apply_theme()
 end
