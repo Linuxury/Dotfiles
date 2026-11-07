@@ -1,0 +1,26 @@
+# Generated on each host: theme palettes from matugen and Noctalia, and lazy.nvim's
+# lockfile. Kept locally, never committed.
+
+# hypridle.conf is a symlink to this host's profile (hypridle-desktop.conf or
+# hypridle-laptop.conf), created at rebuild; the profiles are the source of truth.
+hypr/hypridle.conf
+
+# Colour files: change on every wallpaper switch, not part of the config.
+hypr/colors.conf
+hypr/colors.lua
+hypr/colors-hyprlock.conf
+hypr/hyprtoolkit.conf
+hypr/noctalia.lua
+nvim/lua/matugen.lua
+
+# lazy.nvim's own lockfile: left unpinned on purpose, always take the latest
+# commit of every plugin instead of tracking exact versions.
+nvim/lazy-lock.json
+
+# Umbriel: Noctalia's own theming output, regenerated on every wallpaper change.
+umbriel/noctalia.toml
+
+# Live monitor state dumped by the umbriel-displays plugin, rewritten on every
+# output change. The real per-output config is modules/outputs.toml, included by
+# config.toml; this top-level file is not in the include list.
+umbriel/outputs.toml

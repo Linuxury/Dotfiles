@@ -1,0 +1,251 @@
+/* ===========================================================================
+ * waybar/style.css — Visual design for Waybar
+ * =========================================================================== */
+@import "/home/linuxury/.config/waybar/colors.css";
+
+/* ============================================================
+ * GLOBAL FONT — change here to update the entire bar
+ * font-family : --bar-font
+ * font-size   : --bar-font-size
+ * ============================================================ */
+* {
+    border:        none;
+    border-radius: 0;
+    font-family:   "JetBrainsMono Nerd Font Propo", monospace; /* --bar-font */
+    font-size:     15px;                                        /* --bar-font-size */
+    min-height:    0;
+}
+
+window#waybar {
+    background: transparent;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: alpha(@surface, 0.75);
+    border-radius:    10px;
+    padding:          4px 10px;
+    margin:           2px 4px;
+}
+
+/* -----------------------------------------------------------------------
+ * Workspaces
+ * ----------------------------------------------------------------------- */
+#workspaces {
+    margin: 0 4px 0 0;
+}
+
+#workspaces button {
+    padding:       0 8px;
+    min-width:     24px;
+    color:         @on_surface_var;
+    background:    transparent;
+    border-radius: 6px;
+    transition:    all 0.15s ease;
+    font-weight:   bold;
+}
+
+#workspaces button.nonempty {
+    color: @on_surface;
+}
+
+#workspaces button:hover {
+    color:      @on_surface;
+    background: rgba(205, 214, 244, 0.1);
+}
+
+#workspaces button.active {
+    color:      @primary;
+    background: rgba(137, 180, 250, 0.15);
+}
+
+#workspaces button.urgent {
+    color:      @error;
+    background: rgba(243, 139, 168, 0.15);
+}
+
+/* -----------------------------------------------------------------------
+ * Window title
+ * ----------------------------------------------------------------------- */
+#window {
+    color:   @on_surface_var;
+    padding: 0 6px;
+}
+
+/* -----------------------------------------------------------------------
+ * Launcher + pinned apps
+ * ----------------------------------------------------------------------- */
+#custom-launcher {
+    color:       @primary;
+    font-size:   20px;
+    padding:     0 10px;
+    font-weight: bold;
+}
+
+#custom-launcher:hover {
+    color: @tertiary;
+}
+
+#custom-browser,
+#custom-terminal,
+#custom-files {
+    color:   @on_surface_var;
+    padding: 0 12px;
+    font-size: 18px;
+}
+
+#custom-browser:hover,
+#custom-terminal:hover,
+#custom-files:hover {
+    color:      @on_surface;
+    background: rgba(205, 214, 244, 0.1);
+    border-radius: 6px;
+}
+
+/* -----------------------------------------------------------------------
+ * Media (scrolling ticker)
+ * ----------------------------------------------------------------------- */
+#custom-media-scroll {
+    color:     @on_surface_var;
+    padding:   0 8px;
+    min-width: 320px;  /* ~40 chars — prevents bar width jumping */
+}
+
+#custom-media-scroll:hover {
+    color: @on_surface;
+}
+
+#custom-media-prev,
+#custom-media-next {
+    color:   @on_surface_var;
+    padding: 0 4px;
+    font-size: 16px;
+}
+
+#custom-media-prev:hover,
+#custom-media-next:hover {
+    color: @on_surface;
+}
+
+#custom-media-play {
+    color:     @primary;
+    padding:   0 6px;
+    font-size: 16px;
+}
+
+#custom-media-play:hover {
+    color: @tertiary;
+}
+
+#custom-window-sep,
+#custom-media-sep {
+    color:   rgba(69, 71, 90, 0.8);
+    padding: 0 2px;
+    font-size: 16px;
+}
+
+/* -----------------------------------------------------------------------
+ * Clock
+ * ----------------------------------------------------------------------- */
+#custom-clock {
+    color:       @on_surface;
+    font-weight: bold;
+    padding:     0 10px;
+}
+
+/* -----------------------------------------------------------------------
+ * Tray
+ * ----------------------------------------------------------------------- */
+#tray {
+    padding: 0 4px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+/* -----------------------------------------------------------------------
+ * Battle.net custom module
+ * ----------------------------------------------------------------------- */
+#custom-battlenet {
+    color:   @on_surface_var;
+    padding: 0 6px;
+    font-size: 16px;
+}
+
+#custom-battlenet:hover {
+    color: @on_surface;
+}
+
+/* -----------------------------------------------------------------------
+ * Separator
+ * ----------------------------------------------------------------------- */
+#custom-sep,
+#custom-sep-battery {
+    color:   rgba(69, 71, 90, 0.8);
+    padding: 0 6px;
+    font-size: 18px;
+}
+
+/* -----------------------------------------------------------------------
+ * Right-side modules
+ * ----------------------------------------------------------------------- */
+#custom-volume,
+#backlight,
+#battery,
+#custom-notification {
+    color:   @on_surface;
+    padding: 0 5px;
+}
+
+#custom-power {
+    color:   @error;
+    padding: 0 10px;
+    font-size: 17px;
+}
+
+#custom-power:hover {
+    color: rgba(243, 139, 168, 0.7);
+}
+
+#custom-layout {
+    color:     @on_surface_var;
+    padding:   0 6px;
+    font-size: 18px;
+}
+
+#custom-layout:hover {
+    color: @primary;
+}
+
+#custom-weather {
+    color:   @on_surface_var;
+    padding: 0 5px;
+}
+
+#custom-updates {
+    color:   @on_surface_var;
+    padding: 0 5px;
+}
+
+#custom-updates.pending {
+    color: @tertiary;
+}
+
+
+/* -----------------------------------------------------------------------
+ * Battery states
+ * ----------------------------------------------------------------------- */
+#battery.warning {
+    color: @tertiary;
+}
+
+#battery.critical {
+    color:     @error;
+    animation: blink 0.8s linear infinite alternate;
+}
+
+@keyframes blink {
+    to { color: rgba(243, 139, 168, 0.3); }
+}

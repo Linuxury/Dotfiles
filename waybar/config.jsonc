@@ -1,0 +1,256 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 44,
+    "margin-top": 6,
+    "margin-left": 10,
+    "margin-right": 10,
+    "spacing": 0,
+    "fixed-center": true,
+    "modules-left": [
+        "custom/launcher",
+        "hyprland/workspaces",
+        "custom/browser",
+        "custom/terminal",
+        "custom/files",
+        "custom/window-sep",
+        "hyprland/window",
+        "custom/media-sep",
+        "custom/media-prev",
+        "custom/media-play",
+        "custom/media-next",
+        "custom/media-scroll"
+    ],
+    "modules-center": [
+        "custom/clock"
+    ],
+    "modules-right": [
+        "custom/battlenet",
+        "tray",
+        "custom/sep",
+        "custom/weather",
+        "custom/sep",
+        "custom/volume",
+        "custom/sep-battery",
+        "battery",
+        "custom/sep-battery",
+        "custom/updates",
+        "custom/sep",
+        "custom/notification",
+        "custom/sep",
+        "custom/layout",
+        "custom/sep",
+        "custom/power"
+    ],
+    "hyprland/workspaces": {
+        "format": "{icon}",
+        "all-outputs": false,
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+        "on-scroll-down": "hyprctl dispatch workspace e-1",
+        "format-icons": {
+            "1": "1",
+            "2": "2",
+            "3": "3"
+        },
+        "persistent-workspaces": {
+            "DP-3": [1, 2, 3],
+            "*": [1, 2, 3]
+        }
+    },
+    "hyprland/window": {
+        "format": "{}",
+        "max-length": 25,
+        "separate-outputs": true
+    },
+    "custom/launcher": {
+        "format": "{}",
+        "tooltip": false,
+        "on-click": "wofi --show drun",
+        "return-type": "json",
+        "exec": "echo '{\"text\":\"󰍜\"}'"
+    },
+    "custom/browser": {
+        "format": "{}",
+        "on-click": "firefox",
+        "return-type": "json",
+        "exec": "echo '{\"text\":\"󰖟\",\"tooltip\":\"Firefox\"}'"
+    },
+    "custom/terminal": {
+        "format": "{}",
+        "on-click": "kitty",
+        "return-type": "json",
+        "exec": "echo '{\"text\":\"󰆍\",\"tooltip\":\"Kitty\"}'"
+    },
+    "custom/files": {
+        "format": "{}",
+        "on-click": "nautilus",
+        "return-type": "json",
+        "exec": "echo '{\"text\":\"󰉋\",\"tooltip\":\"Nautilus\"}'"
+    },
+    "custom/media-scroll": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "~/.config/hypr/waybar/scripts/media-scroll.sh",
+        "interval": 1,
+        "exec-if": "playerctl status 2>/dev/null | grep -qE 'Playing|Paused'",
+        "tooltip": false,
+        "on-scroll-up": "playerctl previous",
+        "on-scroll-down": "playerctl next"
+    },
+    "custom/media-prev": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "echo '{\"text\":\"󰒮\",\"tooltip\":\"Previous\"}'",
+        "exec-if": "playerctl status 2>/dev/null | grep -qE 'Playing|Paused'",
+        "on-click": "playerctl previous",
+        "interval": 2
+    },
+    "custom/media-play": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "playerctl status 2>/dev/null | grep -q Playing && echo '{\"text\":\"󰏤\",\"tooltip\":\"Pause\"}' || echo '{\"text\":\"󰐊\",\"tooltip\":\"Play\"}'",
+        "exec-if": "playerctl status 2>/dev/null | grep -qE 'Playing|Paused'",
+        "on-click": "playerctl play-pause",
+        "interval": 2
+    },
+    "custom/media-next": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "echo '{\"text\":\"󰒭\",\"tooltip\":\"Next\"}'",
+        "exec-if": "playerctl status 2>/dev/null | grep -qE 'Playing|Paused'",
+        "on-click": "playerctl next",
+        "interval": 2
+    },
+    "custom/clock": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 1,
+        "exec": "~/.config/hypr/waybar/scripts/clock.sh",
+        "tooltip": true
+    },
+    "tray": {
+        "icon-size": 16,
+        "spacing": 8
+    },
+    "custom/battlenet": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "~/.config/hypr/waybar/scripts/battlenet.sh",
+        "exec-if": "pgrep -f 'Battle.net.exe' >/dev/null 2>&1",
+        "interval": 3,
+        "on-click": "hyprctl dispatch focuswindow class:steam_app_0",
+        "on-click-right": "~/.config/hypr/waybar/scripts/battlenet.sh close"
+    },
+    "custom/volume": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "~/.config/hypr/waybar/scripts/volume.sh",
+        "interval": 2,
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-scroll-up": "wpctl set-volume --limit 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+    },
+    "battery": {
+        "bat": "BAT0",
+        "adapter": "ADP0",
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰚥 {capacity}%",
+        "format-full": "󰁹 Full",
+        "format-not-present": "",
+        "format-icons": [
+            "󰁺",
+            "󰁻",
+            "󰁼",
+            "󰁽",
+            "󰁾",
+            "󰁿",
+            "󰂀",
+            "󰂁",
+            "󰂂",
+            "󰁹"
+        ],
+        "tooltip-format": "{timeTo} — {capacity}%",
+        "tooltip-format-not-present": ""
+    },
+    "custom/weather": {
+        "format": "{}",
+        "return-type": "json",
+        "tooltip": true,
+        "interval": 1800,
+        "exec": "~/.config/hypr/waybar/scripts/weather.sh",
+        "exec-if": "curl -sf --max-time 2 ipinfo.io/city &>/dev/null"
+    },
+    "custom/updates": {
+        "format": "{}",
+        "return-type": "json",
+        "tooltip": true,
+        "interval": 3600,
+        "exec": "~/.config/hypr/waybar/scripts/updates.sh"
+    },
+    "custom/notification": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": {
+            "notification": "󱅫",
+            "none": "󰂚",
+            "dnd-notification": "󱅫",
+            "dnd-none": "󰂛",
+            "inhibited-notification": "󱅫",
+            "inhibited-none": "󰂚",
+            "dnd-inhibited-notification": "󱅫",
+            "dnd-inhibited-none": "󰂛"
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
+    },
+    "custom/power": {
+        "format": "󰐥",
+        "tooltip": false,
+        "on-click": "~/.config/hypr/scripts/powermenu.sh"
+    },
+    "custom/sep": {
+        "format": "|",
+        "interval": "once",
+        "tooltip": false
+    },
+    "custom/sep-battery": {
+        "format": "{}",
+        "exec": "echo '|'",
+        "exec-if": "test -d /sys/class/power_supply/BAT0 || test -d /sys/class/power_supply/BAT1",
+        "interval": "once",
+        "tooltip": false
+    },
+    "custom/window-sep": {
+        "format": " | ",
+        "return-type": "json",
+        "exec": "echo '{\"text\":\" | \"}'",
+        "exec-if": "hyprctl activewindow 2>/dev/null | grep -q 'class:'",
+        "interval": 2,
+        "tooltip": false
+    },
+    "custom/media-sep": {
+        "format": " | ",
+        "return-type": "json",
+        "exec": "echo '{\"text\":\" | \"}'",
+        "exec-if": "playerctl status 2>/dev/null | grep -qE 'Playing|Paused'",
+        "interval": 2,
+        "tooltip": false
+    },
+    "custom/layout": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "~/.config/hypr/waybar/scripts/layout.sh",
+        "on-click": "~/.config/hypr/waybar/scripts/layout.sh cycle",
+        "interval": 2,
+        "tooltip": true
+    }
+}

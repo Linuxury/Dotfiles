@@ -1,0 +1,30 @@
+[misc]
+pre_sudo = true
+no_retry = true
+# Keep the last 3 generations when cleaning up
+# (nixos-rebuild and auto-update handle system updates separately)
+disable = [
+  # Handled by commands below (prevents duplicate rebuild)
+  "system",
+  "nix",
+  "home_manager",
+  # Helix on NixOS ships with pre-compiled grammars in the Nix store (read-only).
+  # hx --grammar fetch always fails here — grammars are updated via nixpkgs, not manually.
+  "helix",
+  # Managed by Nix — self-update writes to the Nix store (read-only), always fails.
+  # Update these via nru instead.
+  "claude_code",
+  "poetry",
+  # Handled by nru (_nru_flatpak_bar) and the weekly flatpak-auto-update systemd
+  # timer instead — both know to ignore Hytale's permanent dangling-remote
+  # failure (com.hypixel.HytaleLauncher), which topgrade's own flatpak step
+  # has no way to replicate and would otherwise report as a fresh error here.
+  "flatpak",
+]
+
+[commands]
+# Pull latest config from git, then rebuild.
+# --ff-only refuses to merge if there are local uncommitted changes — fails
+# loudly rather than silently clobbering your work.
+"NixOS config (git pull)" = "git -C ~/nixos-config pull --ff-only"
+"NixOS rebuild"           = "sudo nixos-rebuild switch --flake ~/nixos-config"

@@ -1,0 +1,436 @@
+/* ===========================================================================
+ * swaync/style.css — Notification center styling
+ *
+ * Pill-style notification toasts + compact control center panel.
+ * Colors from matugen via colors.css.
+ * =========================================================================== */
+@import "/home/linuxury/.config/swaync/colors.css";
+
+* {
+    font-family: "JetBrainsMono Nerd Font Propo", monospace;
+    font-size:   15px;
+    font-weight: bold;
+    --noti-bg:       20, 18, 24;
+    --noti-bg-alpha:  0.5;
+    --cc-bg:         alpha(@surface, 0.75);
+}
+
+/* -----------------------------------------------------------------------
+ * Control center panel
+ * ----------------------------------------------------------------------- */
+window,
+window > box,
+window > scrolledwindow,
+window > eventbox,
+notificationwindow,
+notificationwindow > box,
+blankwindow,
+.control-center-background,
+.floating-notifications,
+.notification-window {
+    background:       none;
+    background-color: transparent;
+    box-shadow:       none;
+}
+
+.control-center {
+    background-color: alpha(@surface, 0.75);
+    border-radius:    12px 0 0 12px;
+    border:           1px solid alpha(@outline_var, 0.4);
+    padding:          4px;
+}
+
+/* -----------------------------------------------------------------------
+ * Notifications — shared (both toast and panel)
+ * ----------------------------------------------------------------------- */
+.notification-background {
+    background:       transparent;
+    background-color: transparent;
+    padding:          0;
+    margin:           0;
+    border:           none;
+    box-shadow:       none;
+}
+
+/* Urgency accent bars — same in both contexts */
+.low     { border-left: 3px solid @on_surface_var; }
+.normal  { border-left: 3px solid @primary; }
+.critical {
+    border-left: 3px solid @error;
+    background:  alpha(@error, 0.08);
+}
+
+/* Action buttons */
+.notification-default-action,
+.notification-action {
+    padding:          4px 12px;
+    border-radius:    8px;
+    color:            @on_surface;
+    background-color: alpha(@surface_variant, 0.8);
+    border:           none;
+    margin:           2px;
+}
+
+.notification-default-action:hover,
+.notification-action:hover {
+    background-color: alpha(@primary, 0.2);
+    color:            @primary;
+}
+
+/* -----------------------------------------------------------------------
+ * TOAST notifications — popup only (.floating-notifications)
+ * Larger icon (40px, rounded rect), bolder text, more padding.
+ * ----------------------------------------------------------------------- */
+.floating-notifications .notification-row {
+    outline: none;
+    margin:  0 0 4px 0;
+    padding: 0 8px;
+}
+
+.floating-notifications .notification {
+    border-radius: 12px;
+    margin:        0;
+    padding:       0;
+    border:        1px solid alpha(@outline_var, 0.4);
+    background:    alpha(@surface, 0.5);
+}
+
+.floating-notifications .notification-content {
+    background-color: transparent;
+    border-radius:    12px;
+    padding:          10px 14px;
+    color:            @on_surface;
+}
+
+.floating-notifications .notification-content box {
+    margin:    0 4px;
+    min-width: 0;
+}
+
+/* Toast icon — 40px, rounded rect, top-left */
+.floating-notifications .notification-content image {
+    min-width:      40px;
+    min-height:     40px;
+    -gtk-icon-size: 40px;
+    background:     transparent;
+    box-shadow:     none;
+    border-radius:  6px;
+    margin-top:     0;
+    margin-bottom:  auto;
+}
+
+.floating-notifications .summary {
+    font-weight:   bold;
+    color:         @on_surface;
+    font-size:     15px;
+    white-space:   normal;
+    overflow:      visible;
+    text-overflow: unset;
+    min-width:     0;
+    max-width:     100%;
+}
+
+.floating-notifications .body {
+    color:       @on_surface_var;
+    font-size:   13px;
+    white-space: normal;
+    min-width:   0;
+    max-width:   100%;
+}
+
+.floating-notifications .time {
+    color:     alpha(@on_surface_var, 0.5);
+    font-size: 11px;
+}
+
+.floating-notifications .close-button {
+    background-color: alpha(@surface_variant, 0.6);
+    border-radius:    50%;
+    border:           none;
+    min-width:        24px;
+    min-height:       24px;
+    padding:          0;
+    margin:           0;
+}
+
+.floating-notifications .close-button:hover {
+    background-color: alpha(@error, 0.6);
+}
+
+/* -----------------------------------------------------------------------
+ * PANEL notifications — control center compact row (.control-center)
+ * 20px circular icon, full-width text, dense cards — fits 6-8 items
+ * in the same height toasts would show 3.
+ * ----------------------------------------------------------------------- */
+.control-center .notification-row {
+    outline: none;
+    margin:  0 0 2px 0;
+    padding: 0;
+}
+
+.control-center .notification {
+    border-radius: 8px;
+    margin:        0;
+    padding:       0;
+    border:        1px solid alpha(@outline_var, 0.2);
+    background:    alpha(@surface, 0.35);
+}
+
+.control-center .notification-content {
+    background-color: transparent;
+    border-radius:    8px;
+    padding:          6px 4px;
+    color:            @on_surface;
+}
+
+.control-center .notification-content box {
+    margin:    0 4px 0 0;
+    min-width: 0;
+}
+
+/* Panel icon — 20px circle, top-aligned */
+.control-center .notification-content image {
+    min-width:      20px;
+    min-height:     20px;
+    -gtk-icon-size: 20px;
+    background:     transparent;
+    box-shadow:     none;
+    border-radius:  50%;
+    margin-top:     2px;
+    margin-bottom:  auto;
+    margin-right:   6px;
+    margin-left:    0;
+}
+
+.control-center .summary {
+    font-weight:   bold;
+    color:         @on_surface;
+    font-size:     13px;
+    white-space:   normal;
+    overflow:      visible;
+    text-overflow: unset;
+    min-width:     0;
+    max-width:     100%;
+}
+
+.control-center .body {
+    color:       @on_surface_var;
+    font-size:   12px;
+    white-space: normal;
+    min-width:   0;
+    max-width:   100%;
+}
+
+.control-center .time {
+    color:     alpha(@on_surface_var, 0.45);
+    font-size: 10px;
+}
+
+.control-center .close-button {
+    background-color: alpha(@surface_variant, 0.5);
+    border-radius:    50%;
+    border:           none;
+    min-width:        20px;
+    min-height:       20px;
+    padding:          0;
+    margin:           0;
+}
+
+.control-center .close-button:hover {
+    background-color: alpha(@error, 0.5);
+}
+
+/* -----------------------------------------------------------------------
+ * Title bar in control center
+ * ----------------------------------------------------------------------- */
+.top-action-title,
+.title {
+    color:       @on_surface;
+    font-weight: bold;
+    font-size:   14px;
+    padding:     4px 8px;
+}
+
+/* -----------------------------------------------------------------------
+ * Clear-all button
+ * ----------------------------------------------------------------------- */
+.clear-all-button {
+    background-color: alpha(@surface_variant, 0.8);
+    color:            @on_surface_var;
+    border-radius:    8px;
+    border:           none;
+    padding:          4px 12px;
+}
+
+.clear-all-button:hover {
+    background-color: alpha(@error, 0.2);
+    color:            @error;
+}
+
+/* -----------------------------------------------------------------------
+ * Section labels — subtle category headers between widget groups
+ * ----------------------------------------------------------------------- */
+.widget-label {
+    color:         alpha(@on_surface_var, 0.5);
+    font-size:     11px;
+    font-weight:   normal;
+    padding:       0 4px 1px 4px;
+    margin-top:    8px;
+    margin-bottom: 0;
+}
+
+/* -----------------------------------------------------------------------
+ * Widget spacing — tighten vertical gap between sections
+ * ----------------------------------------------------------------------- */
+.widget-buttons-grid,
+.widget-volume,
+.widget-backlight,
+.widget-mpris {
+    margin-top:    2px;
+    margin-bottom: 2px;
+}
+
+
+/* -----------------------------------------------------------------------
+ * Volume widget — master + per-app
+ * ----------------------------------------------------------------------- */
+.widget-volume {
+    margin:  4px 2px;
+    padding: 4px 0;
+}
+
+/* Constrain inner box so the scale matches the visual width of other modules */
+.widget-volume > box {
+    padding-left:  16px;
+    padding-right: 16px;
+}
+
+/* Reset GTK4 default scale margins */
+.widget-volume scale {
+    margin:    0;
+    min-width: 0;
+}
+
+/* Per-app volume icon */
+.widget-volume row image {
+    background: transparent;
+    min-width:  24px;
+    min-height: 24px;
+}
+
+/* Expand/collapse per-app button */
+.widget-volume > box > button {
+    background-color: alpha(@surface_variant, 0.6);
+    color:            @on_surface_var;
+    border-radius:    8px;
+    border:           none;
+    padding:          2px 10px;
+    font-size:        12px;
+    margin-top:       4px;
+    min-width:        80px;
+}
+
+.widget-volume > box > button:hover {
+    background-color: alpha(@primary, 0.15);
+    color:            @primary;
+}
+
+/* -----------------------------------------------------------------------
+ * MPRIS widget
+ * ----------------------------------------------------------------------- */
+.mpris-player {
+    background-color: alpha(@surface_variant, 0.7);
+    border-radius:    10px;
+    padding:          8px;
+    margin:           4px 0;
+}
+
+.mpris-title {
+    font-weight: bold;
+    color:       @on_surface;
+}
+
+.mpris-subtitle {
+    color: @on_surface_var;
+}
+
+/* -----------------------------------------------------------------------
+ * Scrollbar — thin, subtle
+ * ----------------------------------------------------------------------- */
+scrollbar {
+    opacity: 0;
+    min-width: 0;
+    max-width: 0;
+}
+
+/* -----------------------------------------------------------------------
+ * Sliders — volume, backlight, and custom sliders
+ * All use matugen @primary so colors follow the wallpaper palette.
+ * ----------------------------------------------------------------------- */
+
+/* Track background */
+.widget-volume scale trough,
+.widget-backlight scale trough,
+.widget-slider scale trough {
+    background:    alpha(@surface_variant, 0.5);
+    border-radius: 8px;
+    min-height:    4px;
+    min-width:     4px;
+}
+
+/* Filled (progress) portion — the colored part */
+.widget-volume scale trough highlight,
+.widget-backlight scale trough highlight,
+.widget-slider scale trough highlight {
+    background:    @primary;
+    border-radius: 8px;
+    min-height:    4px;
+}
+
+/* Drag handle */
+.widget-volume scale slider,
+.widget-backlight scale slider,
+.widget-slider scale slider {
+    background:    @primary;
+    border-radius: 50%;
+    min-width:     14px;
+    min-height:    14px;
+    box-shadow:    none;
+    border:        none;
+}
+
+/* Per-app volume sliders — slightly dimmed */
+.per-app-volume scale trough highlight {
+    background: alpha(@primary, 0.7);
+}
+
+.per-app-volume scale slider {
+    background:  alpha(@primary, 0.85);
+    min-width:   12px;
+    min-height:  12px;
+    box-shadow:  none;
+}
+
+/* -----------------------------------------------------------------------
+ * Buttons grid — WiFi, BT, DND timers, and any future toggles
+ * ----------------------------------------------------------------------- */
+.widget-buttons-grid flowboxchild > button {
+    background-color: alpha(@surface_variant, 0.8);
+    color:            @on_surface;
+    border-radius:    50px;   /* pill shape */
+    border:           none;
+    padding:          6px 10px;
+    font-size:        12px;
+    min-width:        0;      /* let buttons-per-row drive width, not min-width */
+    margin:           2px;
+}
+
+.widget-buttons-grid flowboxchild > button:hover {
+    background-color: alpha(@primary, 0.2);
+    color:            @primary;
+}
+
+.widget-buttons-grid flowboxchild > button.toggle:checked {
+    background-color: alpha(@primary, 0.3);
+    color:            @primary;
+}

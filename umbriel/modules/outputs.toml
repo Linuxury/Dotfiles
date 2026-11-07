@@ -1,0 +1,90 @@
+# Per-output monitor config. Included from config.toml.
+#
+# Ryzen5900x's LG 34" ultrawide. VRR fullscreen-only, same as Hyprland.
+# direct_scanout off (also Hyprland precedent): leaving a fullscreen game
+# swaps the scanout plane mid-flip → "Atomic commit failed: busy" freezes.
+# Named by monitor identity, not connector (DP-3), per Umbriel's own docs
+# recommendation — survives a port change.
+#
+# HDR: "auto" activates PQ/BT.2020 only for fullscreen surfaces with real
+# HDR metadata (native Wayland Wine's BT.2100/scRGB), dropping back to SDR
+# outside fullscreen — no permanent color-space change to the desktop.
+# sdr_white left at its default (203, the standard ITU-R BT.2408 reference
+# white) — override only if this monitor's been calibrated to something
+# else. CachyOS Proton (this host's D4/gaming pin) needs DXVK_HDR=1, not
+# PROTON_ENABLE_HDR=1, for a game to actually publish HDR metadata — see
+# docs/user/outputs.md's HDR section.
+#
+# bitdepth=10/cm=srgb from the Hyprland config deliberately not ported —
+# no equivalent key in Umbriel's output schema; 10-bit output appears to
+# be automatic once HDR is active (per the docs' PQ encoding section).
+
+[output."LG Electronics LG ULTRAGEAR+ 410NTDVAJ338"]
+mode = "3440x1440@240"                        # WIDTHxHEIGHT or WIDTHxHEIGHT@HZ
+scale = 1.0                                   # Logical size is mode size divided by scale
+vrr = "fullscreen"                                # disabled, always, or fullscreen
+direct_scanout = false                        # False forces composition on this output
+hdr = "off"                                 # off, on, auto, or fullscreen
+
+# Reference — every other available per-output key, upstream's own
+# generic example (still commented; ours above already sets the ones
+# that matter for this monitor).
+
+# [output.DP-1]
+# enabled = true                                # False removes the output but preserves its state
+# mode = "2560x1440@144"                        # WIDTHxHEIGHT or WIDTHxHEIGHT@HZ
+# position = [0, 0]                             # Logical top-left; omit for automatic placement
+# scale = 1.25                                  # Logical size is mode size divided by scale
+# transform = "normal"                          # normal, 90, 180, 270, or a flipped variant
+# vrr = "fullscreen"                            # disabled, always, or fullscreen
+# tearing = true                                # Permit eligible fullscreen asynchronous flips
+# direct_scanout = true                         # False forces composition on this output
+# hdr = "auto"                                  # off, on, auto, or fullscreen
+# sdr_white = 203                               # SDR reference white in cd/m2 during HDR
+# workspaces = 5                                # Omit for dynamic workspaces
+
+# Replace the count with ["WEB", "CHAT", "MEDIA"] for named static workspaces,
+# or with "dynamic" to state the dynamic default explicitly. A dynamic output
+# can keep a minimum number of workspaces instead, so a bar always shows them.
+min_workspaces = 4                            # Dynamic floor; rejected with a static inventory
+
+# New scrolling columns on this output can use a different initial width. This
+# affects new columns only; existing columns keep their current size.
+# Documentation: https://docs.noctalia.dev/umbriel/outputs/#initial-scrolling-width
+# [output."LG Electronics LG ULTRAGEAR+ 410NTDVAJ338".layout.scrolling]
+# default_extent_fraction = 0.4
+
+# ─────────────────────────────── Workspaces ──────────────────────────────────
+# Global workspace behavior. Each output uses dynamic workspaces unless its
+# own output section above defines a static count or list of names.
+
+[workspaces]
+back_and_forth = false                          # Re-select active workspace to switch back
+empty_above = false                             # Keep one empty workspace above active range
+
+# Workspace 3 (Steam's home, see window-rules.toml) floats by default.
+[[workspace]]
+index = 3
+layout.mode = "stacking"
+
+# Workspace rules customize layout without creating workspaces. Select exactly
+# one `index` or `name`; `output` is optional. This recipe works with dynamic
+# inventories and static inventories that contain workspace 2. Uncomment the
+# complete block.
+
+# [[workspace]]
+# index = 2
+# output = "LG Electronics LG ULTRAGEAR+ 410NTDVAJ338"
+# layout.mode = "dwindle"
+# layout.gap = 4
+# layout.struts.top = 24
+# layout.scrolling.center_underfull_strip = false
+# layout.dwindle.preserve_split = true
+
+# A name selector must exist in a static output inventory, for example
+# `workspaces = ["WEB", "CHAT"]` in the matching output block.
+
+# [[workspace]]
+# name = "CHAT"
+# output = "LG Electronics LG ULTRAGEAR+ 410NTDVAJ338"
+# layout.mode = "master"
