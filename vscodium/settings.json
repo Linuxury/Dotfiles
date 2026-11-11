@@ -1,16 +1,15 @@
 {
-  "claudeCode.claudeProcessWrapper": "/run/current-system/sw/bin/claude",
-  "claudeCode.preferredLocation": "secondarySidebar",
-  "editor.fontFamily": "JetBrainsMono Nerd Font Propo",
-  "editor.fontSize": 13,
-  "explorer.compactFolders": false,
-  "git.ignoredRepositories": [
-    "/home/linuxury/Obsidian"
-  ],
-  "window.zoomLevel": 1.5,
-  "workbench.colorTheme": "Catppuccin Mocha",
+  "chat.editor.wordWrap": "on",
+  "claudeCode.hideOnboarding": true,
+  "claudeCode.preferredLocation": "panel",
+  "editor.fontFamily": "'JetBrainsMono Nerd Font', monospace",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 15,
+  "markdown-preview-github-styles.darkTheme": "dark_tritanopia",
+  "markdown-preview-github-styles.lightTheme": "light_tritanopia",
+  "terminal.integrated.fontSize": 14,
+  "window.zoomLevel": 1,
+  "workbench.colorTheme": "NoctaliaTheme",
   "workbench.iconTheme": "flow-deep",
-  "workbench.preferredDarkColorTheme": "Dark 2026",
-  "workbench.startupEditor": "none",
-  "workbench.statusBar.visible": false
+  "workbench.startupEditor": "none"
 }
