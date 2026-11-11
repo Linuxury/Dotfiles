@@ -1,0 +1,134 @@
+{
+    "name": "QOL Toggles Steam",
+    "author": "madmaxgrey",
+    "description": "Quality of Life Toggles for the steam client",
+    "discord_support": {
+        "inviteCodeExcludingLink": "NcNMP6r2Cw"
+    },
+    "github": {
+        "owner": "madmaxgrey",
+        "repo_name": "QOL-Toggles-Steam"
+    },
+    "header_image": "https://raw.githubusercontent.com/madmaxgrey/QOL-Toggles-Steam/main/_assets/img/QOLTOOGLESTEAM.png",
+    "splash_image": "https://raw.githubusercontent.com/madmaxgrey/QOL-Toggles-Steam/main/_assets/img/QOLTOOGLESTEAM.png",
+    "tags": [
+        "QOL",
+        "Toggles",
+        "Customizable"
+    ],
+    "version": "1.0.1",
+    "Steam-WebKit": "webkit.css",
+    "UseDefaultPatches": true,
+    "Conditions": {
+        "General - Wallet balance": {
+            "description": "Hide wallet balance",
+            "default": "no",
+            "tab": "General",
+            "section": "Userpannel",
+            "values": {
+                "no": {},
+                "yes": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"],
+                        "src": "config/walletBalance/walletBalance.css"
+                    }
+                }
+            }
+        },
+        "Community - VAC-Ban visibility": {
+            "description": "Hide the VAC ban from your profile or on all profiles",
+            "default": "Show",
+            "tab": "Community",
+            "section": "Profile",
+            "values": {
+                "Show": {},
+                "For me": {
+                    "TargetCss": {
+                        "affects": ["https://steamcommunity\\.com(/.*)?"],
+                        "src": "config/vacBan/me.css"
+                    }
+                },
+                "For all": {
+                    "TargetCss": {
+                        "affects": ["https://steamcommunity\\.com(/.*)?"],
+                        "src": "config/vacBan/all.css"
+                    }
+                }
+            }
+        },
+        "General - News button": {
+            "description": "Hide News button from userpannel",
+            "default": "no",
+            "tab": "General",
+            "section": "Userpannel",
+            "values": {
+                "no": {},
+                "yes": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"],
+                        "src": "config/news/news.css"
+                    }
+                }
+            }
+        },
+        "News container": {
+            "tab": "Library",
+            "description": "Hide or show 'What's New' block in the library.",
+            "default": "Show",
+            "values": {
+                "Show": {},
+                "Hide": {
+                    "TargetCss": {
+                        "affects": ["^Steam$"],
+                        "src": "config/hideNews/hide_news.css"
+                    }
+                }
+            }
+        },
+        "Hide shelf": {
+            "tab": "Library",
+            "description": "Hide the add shelf button in the library.",
+            "default": "no",
+            "values": {
+                "no": {},
+                "yes": {
+                    "TargetCss": {
+                        "affects": [".*"],
+                        "src": "config/hideShelf/hide_shelf.css"
+                    }
+                }
+            }
+        },
+        "Store Page Live Broadcast Visibility": {
+            "tab": "General",
+            "description": "Show / hide Live Broadcast video on the store page",
+            "default": "Show",
+            "values": {
+                "Show": {},
+                "Hide": {
+                    "TargetCss": {
+                        "affects": [
+                            "https://store.steampowered.com/app/.*"
+                        ],
+                        "src": "config/removeStoreLive/removeStoreLive.css"
+                    }
+                }
+            }
+        },
+        "General - Achievement Notification": {
+            "description": "Disables Achievement Notifactions for use with SAN",
+            "default": "no",
+            "tab": "General",
+            "section": "Other",
+            "values": {
+                "no": {},
+                "yes": {
+                    "TargetCss": {
+                        "affects": [".zXrpABNQHpWKgSzqnGlL"],
+                        "src": "config/achievements/achievementNotifaction.css"
+                    }
+                }
+            }
+        }
+    }
+}
