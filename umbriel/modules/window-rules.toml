@@ -30,6 +30,28 @@ default_scrolling_extent = 0.75
 match.app_id = "^steam$"
 default_workspace = 3
 
+# Steam's windows all share app_id "steam", so they're told apart by title.
+# Static placement — Umbriel can't restore a window's last position on its
+# own. Chat windows are titled with the friend's name, so they can't be
+# matched and open at the default spot.
+[[window_rule]]
+match.app_id = "^steam$"
+match.title = "^Steam$"
+default_position = { x = 700, y = 98, anchor = "top_left" }
+default_floating_size_px = { width = 2114, height = 1236 }
+
+[[window_rule]]
+match.app_id = "^steam$"
+match.title = "^Steam Settings$"
+default_position = { x = 1295, y = 314, anchor = "top_left" }
+default_floating_size_px = { width = 850, height = 722 }
+
+[[window_rule]]
+match.app_id = "^steam$"
+match.title = "^Friends List$"
+default_position = { x = 3146, y = 461, anchor = "top_left" }
+default_floating_size_px = { width = 285, height = 659 }
+
 [[window_rule]]
 match.app_id = "^steam_app_.*$"
 default_workspace = 2
