@@ -139,6 +139,9 @@ spawn_when_empty = "thunar"
 "Mod+Space" = "scratchpad-toggle misc"
 "Mod+Ctrl+Space" = { action = "window-restore-from-scratchpad misc", repeat = false }
 "Mod+Tab" = "scratchpad-focus-next misc"
+# Noctalia window switcher (Alt+Tab); `hold` = release Alt to confirm
+"Alt+Tab"       = "spawn noctalia msg window-switcher hold"
+"Alt+Shift+Tab" = "spawn noctalia msg window-switcher hold reverse"
 # Scratchpad windows one at a time — mirrors Mod+Alt+Left/Right for tabs.
 "Mod+Ctrl+Right" = "scratchpad-window-show-next misc"
 "Mod+Ctrl+Left" = "scratchpad-window-show-previous misc"
