@@ -1,12 +1,16 @@
 -- ===========================================================================
--- dotfiles/hypr/hyprland.lua — Hyprland entry point
+-- dotfiles/hypr/hyprland.lua — Hyprland main config (entry point)
 --
--- Lua replaces hyprlang (.conf) as of Hyprland 0.55. This file requires
--- modules — one concern per file. hyprland.lua takes full priority over
--- hyprland.conf when both exist; the .conf file is never read.
+-- Hyprland loads this file at startup and on every `hyprctl reload`. It looks
+-- for it in this order: the --config flag, $HYPRLAND_CONFIG, then
+-- hyprland.lua under $XDG_CONFIG_HOME/hypr (or $XDG_CONFIG_DIRS, /etc/xdg).
+-- Hyprland only reads Lua configs; a hyprland.conf next to it is ignored.
+-- ~/.config/hypr is a link to ~/dotfiles/hypr, so edits here apply on reload.
 --
--- Load order matters: colors must be required before appearance
--- (appearance.lua references the color globals defined there).
+-- require() searches <config dir>/?.lua and <config dir>/?/init.lua first,
+-- so require("modules.input") loads modules/input.lua. Each module covers one
+-- area. Load order matters: colors must be required before appearance
+-- (appearance.lua reads the color globals that colors.lua defines).
 -- ===========================================================================
 
 require("modules.environment")
@@ -19,17 +23,21 @@ require("modules.windowrules")
 require("modules.autostart")
 require("modules.keybinds")
 
--- Shell-specific injections — written at HM activation by the active shell module.
---   shell-active.lua      = per-shell config overrides
---   shell-autostart.lua   = per-shell exec-once launch  (e.g. noctalia-shell)
--- Both files always exist (activation writes them, even if empty).
+-- Shell files — written by the shell module's Home Manager activation
+-- (modules/shells/*.nix in nixos-config). Not tracked in this repo.
+--   shell-active.lua      extra binds/rules the shell needs (empty for Noctalia)
+--   shell-autostart.lua   launch commands for the shell (empty when a systemd
+--                         user service starts the shell instead)
 --
--- Component injections — written at HM activation when a modules/components/*
--- module is imported by the host. Each file is optional (safe_dofile skips
--- missing ones), so unused components leave no trace in the compositor state.
---   components/bar.lua           — waybar keybinds (layout cycle)
---   components/launcher.lua      — wofi/rofi keybinds + window rules
---   components/notifications.lua — swaync layer rules
+-- Component files — written by Home Manager activation when the host imports
+-- a modules/components/* module. Each one is optional.
+--   components/bar.lua           waybar: empty placeholder for bar binds
+--   components/launcher.lua      wofi/rofi binds (SUPER+Space/R/V/Tab) and
+--                                wofi window rules
+--   components/notifications.lua swaync layer rules (slide-in animation)
+--
+-- safe_dofile(path) runs a file only if it can be opened for reading, so a
+-- missing file is skipped. It does not catch errors raised inside the file.
 local home = os.getenv("HOME")
 local function safe_dofile(path)
     local f = io.open(path, "r")
@@ -41,15 +49,16 @@ safe_dofile(home .. "/.config/hypr/components/bar.lua")
 safe_dofile(home .. "/.config/hypr/components/launcher.lua")
 safe_dofile(home .. "/.config/hypr/components/notifications.lua")
 
--- For Noctalia Color templates
--- require() caches `true` if the module ever loads with no `return` (e.g. a
--- reload races Noctalia rewriting this file mid-write) and keeps serving that
--- stale value forever, crashing "attempt to index a boolean value" here on
--- every future reload even after the file is valid again. Guard against it:
--- if the cached value isn't a table, drop it and require fresh once; if it's
--- still not valid, skip applying the theme this pass instead of crashing.
--- noctalia.lua is generated on each host and not in the repo, so a fresh clone
--- has no such file until Noctalia writes it; pcall keeps that from erroring.
+-- Noctalia color theme — noctalia.lua is written by Noctalia's color
+-- templates on each host and is not in this repo.
+--   pcall               a missing or broken noctalia.lua does not stop the
+--                       rest of the config from loading
+--   type check          require() caches `true` for a module that returns
+--                       nothing (e.g. a file read while half-written); if the
+--                       cached value is not a table, clear package.loaded and
+--                       require once more
+--   apply_theme()       called only when the module loaded as a table that
+--                       has it; otherwise the theme is skipped for this load
 -- Keep the literal require("noctalia") below: Noctalia looks for it and appends
 -- its own unguarded copy when it is missing.
 local ok, noctalia = pcall(function() return require("noctalia") end)

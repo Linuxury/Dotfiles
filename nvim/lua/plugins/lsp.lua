@@ -1,5 +1,7 @@
 return {
-  -- LSP client — binaries come from Nix, not Mason
+  -- nvim-lspconfig — language server definitions. Server binaries come from
+  -- Nix, not Mason. config() sets up diagnostics (lua/utils/diagnostics.lua)
+  -- and starts each server in lua/servers/.
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
@@ -10,7 +12,14 @@ return {
     end,
   },
 
-  -- Autocomplete
+  -- blink.cmp — completion engine (1.x), with LuaSnip + friendly-snippets.
+  --   keymap: `default` preset; <CR> accepts, <Tab>/<S-Tab> select next/prev
+  --   appearance.nerd_font_variant  mono | normal
+  --   completion.documentation      auto-show the doc popup after 500 ms
+  --   sources.default               lsp, path, snippets, buffer, lazydev
+  --   snippets.preset               luasnip      signature.enabled  true
+  --   fuzzy.implementation          prefer_rust_with_warning (Rust matcher,
+  --                                 warn and use the Lua one if it is missing)
   {
     "saghen/blink.cmp",
     event = "InsertEnter",
@@ -51,7 +60,9 @@ return {
     },
   },
 
-  -- Lua LSP type hints for Neovim APIs (resolves vim.* undefined-global warnings)
+  -- lazydev.nvim — type information for the Neovim Lua API in Lua files, so
+  -- lua_ls does not report vim.* as undefined. `library` adds luv (vim.uv) and
+  -- snacks.nvim (loaded when those words appear).
   {
     "folke/lazydev.nvim",
     ft = "lua",

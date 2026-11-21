@@ -1,5 +1,9 @@
 return {
-  -- opencode — terminal AI agent with TUI; integrates with snacks picker
+  -- opencode.nvim — editor integration for the opencode terminal agent.
+  --   <leader>ao toggle the agent window    <leader>aa ask with @this context
+  --   <leader>ax pick an action             <leader>au / ad scroll the session
+  --   <a-a> in a snacks picker sends the selected items to opencode
+  -- autoread reloads buffers the agent changes on disk.
   {
     "nickjvandyke/opencode.nvim",
     version = "*",
@@ -43,7 +47,12 @@ return {
     end,
   },
 
-  -- Claude Code — sidebar integration
+  -- claude-code.nvim — Claude Code in a right-hand terminal split.
+  --   setup(): window.position/split_ratio place the split; refresh.* polls files
+  --   for changes made by the agent; git.use_git_root starts it at the repo root;
+  --   keymaps.toggle is disabled (the toggle below replaces it) while window
+  --   navigation and scrolling maps stay on.
+  --   <leader>ac toggle   <leader>acC claude --continue   <leader>acR claude --resume
   {
     "greggh/claude-code.nvim",
     version = "*",

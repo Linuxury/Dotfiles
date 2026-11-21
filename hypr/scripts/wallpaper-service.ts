@@ -1,12 +1,15 @@
 // =============================================================================
 // wallpaper-service.ts — AGS wallpaper rotation + matugen daemon
 //
-// Single source of truth for all wallpaper changes:
-//   - Auto-rotates every 30 min (aligned to :00 and :30)
-//   - Fullscreen detection via native astal-hyprland IPC
-//   - Gentle transitions (fade/wipe/directional — no grow/outer/center)
+// AGS (Astal, GTK4) daemon that sets wallpapers with awww:
+//   - rotates every 30 min, at :00 and :30, skipping while a window is
+//     fullscreen
+//   - writes the chosen path to ~/.local/share/last-matugen-wallpaper for
+//     the matugen color pipeline, and copies it to the greeter's
+//     /var/lib/wallpapers/current.jpg
+//   - logs to ~/.local/share/wallpaper-service.log
 //
-// On-demand rotation via AGS IPC (replaces the old set-wallpaper.sh):
+// On-demand rotation via AGS IPC:
 //   ags request wallpaper-service rotate        — skip if fullscreen
 //   ags request wallpaper-service force-rotate  — always rotate
 //
@@ -26,9 +29,10 @@ const LAST_FILE     = `${HOME}/.local/share/last-matugen-wallpaper`
 const LOG_FILE      = `${HOME}/.local/share/wallpaper-service.log`
 const GREETER_FILE  = "/var/lib/wallpapers/current.jpg"
 
-// Gentle transitions only.
-// Excluded: grow, outer, center, any, random
-// — those create full-screen circular GPU animations that spike GPU load.
+// awww (0.12.1) transition types picked at random. All types: none, simple
+// (default fade), fade, left, right, top, bottom, wipe, wave, grow, center,
+// any, outer, random. grow/center/outer/any/random are left out: they draw
+// full-screen circular animations with high GPU load.
 const TRANSITIONS = ["fade", "wipe", "left", "right", "top", "bottom"] as const
 
 // ─── Logging ──────────────────────────────────────────────────────────────────
@@ -67,8 +71,8 @@ function run(argv: string[]): RunResult {
 }
 
 // ─── Fullscreen detection — native Hyprland IPC ───────────────────────────────
-// Hyprland reports fullscreen as an integer: 0=none, 1=fullscreen, 2=fake.
-// Using astal-hyprland avoids spawning a subprocess and parsing JSON.
+// Reads clients through astal-hyprland; any client with a non-zero
+// fullscreen mode counts (0 = none).
 
 function hasFullscreenWindow(): boolean {
     try {
@@ -115,7 +119,7 @@ function inode(path: string): string {
 }
 
 // Compare by inode so symlink vs. real-path differences don't matter.
-// ~/Pictures/Wallpapers is mkOutOfStoreSymlink → the Assets input, Wallpapers/<dir>
+// ~/Pictures/Wallpapers is a symlink into the assets repo (Wallpapers/<dir>).
 function sameFile(a: string, b: string): boolean {
     if (!a || !b) return false
     const ia = inode(a), ib = inode(b)
@@ -136,11 +140,10 @@ function currentAwwwWallpaper(): string {
 }
 
 // ─── Core: set wallpaper ─────────────────────────────────────────────────────
-// Matugen is intentionally NOT called here.
-// Writing LAST_FILE triggers hypr-matugen.path → hypr-matugen.service, which
-// runs imagemagick + matugen in a separate process with deduplication.
-// This mirrors the COSMIC approach (wallpaper-color-sync.service) and prevents
-// rapid double-runs from crashing GTK4 apps via simultaneous CSS reloads.
+// Sets the wallpaper with awww img (--transition-type/-duration/-fps), then
+// writes LAST_FILE. matugen is not run here: a separate systemd path unit
+// watching that file runs it, so rapid changes do not start overlapping
+// matugen runs (simultaneous CSS reloads can crash GTK4 apps).
 
 function apply(wallpaper: string, skipTransition = false): void {
     const transition = skipTransition
@@ -155,10 +158,10 @@ function apply(wallpaper: string, skipTransition = false): void {
     ])
     if (!awww.ok) log(`WARN awww: ${awww.stderr}`)
 
-    // Write LAST — triggers hypr-matugen.path to run matugen in the background
+    // Write LAST_FILE for the matugen path unit
     try { GLib.file_set_contents(LAST_FILE, wallpaper) } catch { /* ignore */ }
 
-    // Sync to cosmic-greeter (can't read ~/Pictures/, so we use /var/lib/wallpapers/)
+    // Copy for the greeter, which cannot read ~/Pictures
     run(["cp", "-f", wallpaper, GREETER_FILE])
 
     log(`DONE ${wallpaper.split("/").at(-1)}`)
@@ -184,9 +187,9 @@ function rotate(force = false): void {
 }
 
 // ─── Startup sync ─────────────────────────────────────────────────────────────
-// awww restores its last wallpaper on daemon restart, but matugen may not have
-// run yet (or colors may be stale from a different session). Compare inodes
-// to detect divergence and resync without visually changing the wallpaper.
+// awww restores its last wallpaper when its daemon starts, but the colors
+// may belong to another wallpaper. If awww's image differs from LAST_FILE
+// (by inode), re-apply it with no transition to resync the colors.
 
 function syncOnStart(): void {
     const current = currentAwwwWallpaper()
@@ -215,8 +218,8 @@ function secondsToNextSlot(): number {
     const m    = now.get_minute()
     const s    = now.get_second()
     let wait = m < 30 ? (30 - m) * 60 - s : (60 - m) * 60 - s
-    // If we just fired (timer fired slightly early, <60s to the slot boundary),
-    // skip to the following slot — prevents back-to-back double rotations.
+    // Under 60 s to the slot (e.g. the timer fired slightly early): use the
+    // slot after it, so two rotations do not run back to back.
     if (wait < 60) wait += 30 * 60
     return wait
 }

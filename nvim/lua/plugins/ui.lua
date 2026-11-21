@@ -1,5 +1,10 @@
 return {
-  -- Statusline + buffer tabs
+  -- lualine.nvim — statusline plus a tabline of buffers.
+  --   options: icons on, theme "auto" (follows the colourscheme), custom
+  --   section/component separators, disabled for snacks_dashboard
+  --   sections a..z: mode (long form when the window is wider than 100
+  --   columns), branch, filename, lazy updates / diagnostics / diff / filetype /
+  --   encoding (the last four only when wide), location, progress
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
@@ -43,7 +48,7 @@ return {
     end,
   },
 
-  -- Keybinding hints popup
+  -- which-key.nvim — popup listing the keys that follow a pressed prefix
   {
     "folke/which-key.nvim",
     event = "VeryLazy",

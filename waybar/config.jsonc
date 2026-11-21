@@ -1,4 +1,22 @@
+// ===========================================================================
+// waybar/config.jsonc — Waybar configuration (waybar 0.16.0, JSON with // comments)
+//
+// Linked to ~/.config/waybar/ by modules/components/bar/waybar.nix. Styling is in
+// style.css; the palette in colors.css. Custom modules ("custom/<name>") run
+// the commands below, or the scripts in ~/.config/hypr/waybar/scripts/.
+//
+// Custom-module keys used here (waybar-custom(5)):
+//   exec / exec-if      command to run / condition (exit 0 = run it)
+//   return-type "json"  exec prints one JSON line: text, alt, tooltip, class, percentage
+//   interval            seconds between runs; "once" = a single run at startup
+//   format              "{}" shows the text field
+//   on-click, on-click-right, on-scroll-up, on-scroll-down   commands for the events
+//   tooltip, escape     tooltip on/off; escape Pango markup in the output
+// ===========================================================================
 {
+    // Bar window: layer (top = in front of windows), position (top, bottom, left,
+    // right), height in px, margin-* around the bar, spacing between modules,
+    // fixed-center keeps modules-center centred.
     "layer": "top",
     "position": "top",
     "height": 44,
@@ -7,6 +25,7 @@
     "margin-right": 10,
     "spacing": 0,
     "fixed-center": true,
+    // Module lists for the left, centre and right of the bar.
     "modules-left": [
         "custom/launcher",
         "hyprland/workspaces",
@@ -42,6 +61,9 @@
         "custom/sep",
         "custom/power"
     ],
+    // Workspaces: icon format, scroll switches workspace (replaces the default
+    // cycling), persistent-workspaces always shows 1-3 (on DP-3 and every other
+    // output), all-outputs false limits the group to the bar's own output.
     "hyprland/workspaces": {
         "format": "{icon}",
         "all-outputs": false,
@@ -57,11 +79,14 @@
             "*": [1, 2, 3]
         }
     },
+    // Active window title: max-length 25 characters, separate-outputs shows the
+    // active window of the bar's own monitor.
     "hyprland/window": {
         "format": "{}",
         "max-length": 25,
         "separate-outputs": true
     },
+    // Launcher and pinned apps: a glyph from an echoed JSON line; click starts the app.
     "custom/launcher": {
         "format": "{}",
         "tooltip": false,
@@ -87,6 +112,9 @@
         "return-type": "json",
         "exec": "echo '{\"text\":\"󰉋\",\"tooltip\":\"Nautilus\"}'"
     },
+    // Media: scrolling ticker (scripts/media-scroll.sh), previous / play-pause / next
+    // buttons; every media module is hidden by exec-if unless a player is Playing
+    // or Paused.
     "custom/media-scroll": {
         "format": "{}",
         "return-type": "json",
@@ -121,6 +149,7 @@
         "on-click": "playerctl next",
         "interval": 2
     },
+    // Clock (scripts/clock.sh), refreshed every second; tooltip is the month calendar.
     "custom/clock": {
         "format": "{}",
         "return-type": "json",
@@ -128,10 +157,13 @@
         "exec": "~/.config/hypr/waybar/scripts/clock.sh",
         "tooltip": true
     },
+    // System tray: icon size and spacing in px.
     "tray": {
         "icon-size": 16,
         "spacing": 8
     },
+    // Battle.net button (scripts/battlenet.sh): shown while Battle.net.exe runs;
+    // click focuses the window, right click closes it.
     "custom/battlenet": {
         "format": "{}",
         "return-type": "json",
@@ -141,6 +173,8 @@
         "on-click": "hyprctl dispatch focuswindow class:steam_app_0",
         "on-click-right": "~/.config/hypr/waybar/scripts/battlenet.sh close"
     },
+    // Volume (scripts/volume.sh): click toggles mute, scroll changes 5%
+    // (raising is capped at 100% by --limit 1.0).
     "custom/volume": {
         "format": "{}",
         "return-type": "json",
@@ -150,6 +184,9 @@
         "on-scroll-up": "wpctl set-volume --limit 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
         "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
     },
+    // Battery (waybar-battery(5)): bat/adapter name the /sys/class/power_supply
+    // entries; states adds CSS classes .warning (<= 30%) and .critical (<= 15%);
+    // format-* per status ({icon} picked from format-icons by capacity).
     "battery": {
         "bat": "BAT0",
         "adapter": "ADP0",
@@ -177,6 +214,7 @@
         "tooltip-format": "{timeTo} — {capacity}%",
         "tooltip-format-not-present": ""
     },
+    // Weather (scripts/weather.sh), every 30 minutes; exec-if checks ipinfo.io is reachable.
     "custom/weather": {
         "format": "{}",
         "return-type": "json",
@@ -185,6 +223,7 @@
         "exec": "~/.config/hypr/waybar/scripts/weather.sh",
         "exec-if": "curl -sf --max-time 2 ipinfo.io/city &>/dev/null"
     },
+    // Pending rebuild indicator (scripts/updates.sh), hourly.
     "custom/updates": {
         "format": "{}",
         "return-type": "json",
@@ -192,6 +231,9 @@
         "interval": 3600,
         "exec": "~/.config/hypr/waybar/scripts/updates.sh"
     },
+    // Notification centre (swaync): `swaync-client -swb` streams state as JSON; the
+    // icon comes from format-icons by alt (notification / none, with dnd- and
+    // inhibited- prefixes). Click toggles the panel, right click toggles Do Not Disturb.
     "custom/notification": {
         "tooltip": false,
         "format": "{icon}",
@@ -212,11 +254,15 @@
         "on-click-right": "swaync-client -d -sw",
         "escape": true
     },
+    // Power button: opens the power menu.
     "custom/power": {
         "format": "󰐥",
         "tooltip": false,
         "on-click": "~/.config/hypr/scripts/powermenu.sh"
     },
+    // Separators: custom/sep is a static "|"; the -battery, window and media
+    // variants appear only when their exec-if holds (a battery exists, a window
+    // has focus, a player is active).
     "custom/sep": {
         "format": "|",
         "interval": "once",
@@ -245,6 +291,7 @@
         "interval": 2,
         "tooltip": false
     },
+    // Hyprland layout indicator (scripts/layout.sh); click cycles the layout.
     "custom/layout": {
         "format": "{}",
         "return-type": "json",

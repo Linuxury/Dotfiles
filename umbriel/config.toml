@@ -1,19 +1,28 @@
-# Umbriel main config — split into smaller files per docs/user/
-# configuration.md's [include] guidance. Later files override earlier
-# ones; values here in the main file override every include.
+# Umbriel main config — the file the compositor reads as
+# ~/.config/umbriel/config.toml. The repo's umbriel/ directory is linked there
+# as a live symlink (mkOutOfStoreSymlink, see nixos-config
+# modules/compositors/umbriel/default.nix), so saving any file here reloads
+# the session config: no rebuild, no logout. A failed reload keeps the last
+# good config. Check edits first with `umbriel config validate`; list every
+# option with `umbriel config schema --json`.
+# Option reference: upstream-default.toml next to this file and the installed
+# docs (docs/user/*.md in the Umbriel source); https://docs.noctalia.dev/umbriel/
 #
-# noctalia.toml is gitignored — Noctalia's own theming output, regenerated
-# on every wallpaper change. Included directly: it already writes Umbriel's
-# real colors.border.*/colors.overview.* schema (the mismatch that used to
-# need modules/compositors/umbriel/noctalia-bridge/ to remap was fixed
-# upstream 2026-09-05 — that module is gone, this is the raw file again).
-#
-# This whole directory is deployed as a live symlink (mkOutOfStoreSymlink,
-# same pattern as dotfiles/hypr/) — edits here take effect immediately,
-# no rebuild needed. See modules/compositors/umbriel/default.nix.
+# This file only stitches the per-topic files under modules/ together.
 
+# Includes — paths are relative to this file; ~, $VAR and ${VAR} expand.
+# Files are applied in list order and the including file is applied last:
+# tables merge by key, rule lists ([[window_rule]], [[workspace]]) collect
+# entries, plain arrays and scalars are replaced by the last file that sets
+# them. Duplicate device/workspace selectors or one effect preset defined in
+# two files are errors.
+#   files              required includes
+#   [include.optional] files that may be missing; they are ignored and
+#                      watched, so creating one later reloads the config
 [include]
 files = ["modules/general.toml", "modules/keybinds.toml", "modules/outputs.toml", "modules/input.toml", "modules/layout.toml", "modules/animation.toml", "modules/overview.toml", "modules/window-rules.toml", "modules/layer-rules.toml", "modules/security.toml", "modules/appearance.toml", "modules/effects.toml"]
 
+# noctalia.toml is Noctalia's generated theme (colors.*, colors.border.*,
+# colors.overview.*), rewritten on every wallpaper change and gitignored.
 [include.optional]
 files = ["noctalia.toml"]

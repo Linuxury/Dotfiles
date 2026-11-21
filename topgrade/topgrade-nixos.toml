@@ -1,30 +1,42 @@
+# topgrade-nixos.toml — Topgrade settings for NixOS hosts (topgrade 17.15.0).
+# Topgrade runs one update step per package manager; this file turns off the
+# steps Nix already owns and adds the config pull + rebuild as custom commands.
+# Reference for every key: `topgrade --config-reference`.
+
+# [misc]
+#   pre_sudo   run `sudo -v` first so a password prompt does not interrupt an
+#              unattended run (default false)
+#   no_retry   same as ask_retry = false: a failed step is not offered again
+#              (default false); auto_retry = N retries automatically
+#   disable    steps to skip, same names as `--disable` (e.g. "system", "emacs")
+#   Not set here: cleanup (remove temporary/old files), sudo_loop, sudo_command,
+#   tmux_session_mode, allow_root
 [misc]
 pre_sudo = true
 no_retry = true
-# Keep the last 3 generations when cleaning up
-# (nixos-rebuild and auto-update handle system updates separately)
 disable = [
-  # Handled by commands below (prevents duplicate rebuild)
+  # Replaced by the [commands] below, so the system is not rebuilt twice.
   "system",
   "nix",
   "home_manager",
-  # Helix on NixOS ships with pre-compiled grammars in the Nix store (read-only).
-  # hx --grammar fetch always fails here — grammars are updated via nixpkgs, not manually.
+  # Helix grammars are prebuilt in the read-only Nix store, so `hx --grammar
+  # fetch` always fails; nixpkgs updates them.
   "helix",
-  # Managed by Nix — self-update writes to the Nix store (read-only), always fails.
-  # Update these via nru instead.
+  # Nix-managed: a self-update would write to the read-only Nix store. Update
+  # through nru instead.
   "claude_code",
   "poetry",
-  # Handled by nru (_nru_flatpak_bar) and the weekly flatpak-auto-update systemd
-  # timer instead — both know to ignore Hytale's permanent dangling-remote
-  # failure (com.hypixel.HytaleLauncher), which topgrade's own flatpak step
-  # has no way to replicate and would otherwise report as a fresh error here.
+  # Handled by nru (_nru_flatpak_bar) and the weekly flatpak-auto-update
+  # systemd timer, which tolerate remotes that no longer resolve; topgrade's
+  # own flatpak step would report those as errors.
   "flatpak",
 ]
 
+# [commands] — custom steps, `"<name>" = "<shell command>"`, run in order.
+# Related tables: [pre_commands] (before every step), [post_commands] (after).
+# A leading `-i` runs the command in an interactive shell.
 [commands]
-# Pull latest config from git, then rebuild.
-# --ff-only refuses to merge if there are local uncommitted changes — fails
-# loudly rather than silently clobbering your work.
+# `git pull --ff-only` fails instead of merging when the local branch has
+# diverged, so local work is never overwritten.
 "NixOS config (git pull)" = "git -C ~/nixos-config pull --ff-only"
 "NixOS rebuild"           = "sudo nixos-rebuild switch --flake ~/nixos-config"

@@ -1,15 +1,22 @@
-# Parent values provide defaults for every event table. Nested values
-# override only that event. Disable one event to make just that
-# transition instant. Included from config.toml. Base structure follows
-# upstream's examples/config.toml (fetched 2026-09-04, see
-# dotfiles/umbriel/upstream-default.toml).
+# Animation — transition timing and curves. Included from ../config.toml.
+# Docs: docs/user/animation.md; option list: `umbriel config schema`.
+# [animation] sets the defaults; each [animation.<event>] table overrides
+# them for that event only, and enabled = false makes just that transition
+# instant. Every table takes enabled, duration_ms (1-10000; ignored by
+# spring curves), curve, and effect (an animation shader preset, see
+# effects.toml) unless noted. Events not set here:
+#   windows_resize   size changes; wait_for_redraw = true turns a resize into
+#                    one switch once the app has redrawn (no effect key)
+#   windows_opacity  focus changes to rule opacity and backdrop blur
+#   dialogs          dim (0.3) shade over a window holding a modal dialog
+#   windows_drag     physics (false) wobbly drag; stiffness, damping,
+#                    coupling, pointer_response, max_displacement_px,
+#                    settle_after_pause_s
 #
-# Curves below are ported from dotfiles/hypr/modules/appearance.lua's
-# hl.curve() beziers, which were tuned there and liked — easeOutBack in
-# particular is a *single controlled overshoot* bezier (peaks at 1.56,
-# then settles), not the same shape as the built-in bounce/elastic curves
-# or a mass-spring simulation.
-
+# The custom beziers at the bottom match the Hyprland config's curves
+# (dotfiles/hypr/modules/appearance.lua). easeOutBack is a single controlled
+# overshoot (peaks at 1.56, then settles), a different shape from the
+# built-in bounce/elastic curves or a spring.
 [animation]
 enabled = true                                  # Master animation switch
 duration_ms = 500                               # Shared duration, 1-10000 ms
@@ -17,7 +24,8 @@ curve = "easeOutQuint"                          # linear, ease, easeout, snappy,
                                                  # or a bezier "x1,y1,x2,y2" / spring "spring: damping,stiffness"
                                                  # string, or a name registered below in [animation.beziers]/[animation.springs]
 
-# Window opening
+# Window opening — style popin, zoom, slide, fade or none; scale is the size
+# a popin window grows from.
 [animation.windows_in]
 enabled = true
 duration_ms = 300
@@ -25,7 +33,8 @@ curve = "easeOutBack"                           # linear, ease, easeout, snappy,
 style = "popin"                                 # popin, zoom, slide, fade, or none
 scale = 0.85                                    # Popin start scale, 0.1-1.0
 
-# Window closing
+# Window closing — style fade, slide, popin or zoom (installed default
+# popin); scale (0.8, not set) is the size a popin window shrinks toward.
 [animation.windows_out]
 enabled = true
 duration_ms = 300
@@ -38,19 +47,22 @@ enabled = true
 duration_ms = 500
 curve = "easeOutQuint"                          # linear, ease, easeout, snappy, bounce, elastic, bezier/spring string, or registered name
 
-# Workspace switching
+# Workspace switching — style slide (default) or reveal, not set.
 [animation.workspaces]
 enabled = true
 duration_ms = 500
 curve = "easeOutBack"                           # linear, ease, easeout, snappy, bounce, elastic, bezier/spring string, or registered name
 
-# Overview opening, closing, and row settling
+# Overview opening, closing, and row settling — workspace_curve (not set)
+# drives filmstrip movement after wheel/keyboard/touchpad navigation.
 [animation.overview]
 enabled = true
 duration_ms = 500
 curve = "easeOutQuint"                          # linear, ease, easeout, snappy, bounce, elastic, bezier/spring string, or registered name
 
-# Scratchpad show, hide, and backdrop
+# Scratchpad show, hide, and backdrop — dim is the black layer's opacity
+# behind a visible scratchpad, blur blurs it; both stay on without a fade
+# when the animation is disabled.
 [animation.scratchpad]
 enabled = false
 duration_ms = 500
@@ -77,7 +89,12 @@ enabled = false
 duration_ms = 500
 curve = "easeOutQuint"                          # linear, ease, easeout, snappy, bounce, elastic, bezier/spring string, or registered name
 
-# Register reusable curves by adding or uncommenting entries below.
+# Named curves, usable as curve = "<name>" in any table above.
+#   [animation.beziers]  name = [x1, y1, x2, y2]; x values must be 0-1
+#   [animation.springs]  name = { damping, stiffness }: damping 0.01-5.0
+#                        (<1 overshoots, 1 none, >1 slower), stiffness
+#                        1-10000 (higher settles faster)
+# Inline alternatives: curve = "x1,y1,x2,y2" or "spring:<damping>,<stiffness>".
 
 [animation.beziers]
 easeOutQuint  = [0.23, 1,    0.32, 1]

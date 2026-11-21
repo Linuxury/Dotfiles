@@ -1,17 +1,21 @@
 -- ===========================================================================
 -- modules/layout-hooks.lua — Dynamic layout behaviors
 --
--- Auto column width — scrolling layout only:
---   1 tiled window  → 67% (centered feel with margin)
---   2+ tiled windows → 50% (half-and-half fills the screen exactly)
+-- Required by hyprland.lua. Sets column widths automatically when
+-- general.layout is "scrolling"; does nothing in other layouts.
+--   1 tiled window    width = scrolling.column_width (set in appearance.lua)
+--   2+ tiled windows  every column 50%
+-- Floating windows are not counted.
 --
--- Uses only native Lua dispatchers (hl.dispatch / hl.dsp.*).
--- hyprctl dispatch is broken in Hyprland 0.55 Lua IPC mode — all dispatches
--- are wrapped as "return hl.dispatch(arg)", making space-separated args
--- (e.g. "layoutmsg colresize 0.50") invalid Lua syntax.
+-- Runs on these events (hl.on):
+--   window.open, window.destroy  deferred one event-loop tick (see below)
+--   workspace.active             runs at once
 --
--- Focus cycling uses direction-based movefocus (left/right) instead of
--- address-based focuswindow, since hl.dsp.focus({ direction }) is native.
+-- Uses Lua dispatchers only: hl.dispatch(hl.dsp.layout("colresize X")) to
+-- resize the focused column and hl.dsp.focus({ direction = "left"|"right" })
+-- to move between columns.
+-- hl.timer(fn, { timeout = ms, type = "oneshot"|"repeat" }) runs fn after
+-- timeout ms (must be > 0), once or repeatedly.
 -- ===========================================================================
 
 local function _apply_col_width()
@@ -38,10 +42,9 @@ local function _apply_col_width()
         return
     end
 
-    -- Multiple windows: move to leftmost column (n left-moves is always enough),
-    -- then sweep right resizing each column.
-    -- On window.open the new window is focused and is the rightmost column,
-    -- so n left-moves reaches column 1. Final position is rightmost = new window.
+    -- Multiple windows: n focus-left moves always reach the leftmost column,
+    -- then sweep right resizing each column. On window.open the new window is
+    -- focused and rightmost, so the sweep ends back on it.
     local steps = {}
     for _ = 1, n do
         steps[#steps + 1] = function() hl.dispatch(hl.dsp.focus({ direction = "left" })) end
@@ -51,20 +54,15 @@ local function _apply_col_width()
         steps[#steps + 1] = function() hl.dispatch(hl.dsp.focus({ direction = "right" })) end
     end
 
-    -- The viewport's "bring focused column into view" fit calculation runs on
-    -- each focus change, but the last real transition above happens right
-    -- after resizing the second-to-last column — while the final column is
-    -- still at its old, wider size. So the on-screen scroll position gets
-    -- fit against stale sizes. One more real left/right hop after every
-    -- column is at its final width forces a fresh fit against final sizes.
+    -- The viewport scrolls the focused column into view on each focus change.
+    -- The last focus change above happens before the final column is
+    -- resized, so one more left/right hop makes the view fit the final widths.
     steps[#steps + 1] = function() hl.dispatch(hl.dsp.focus({ direction = "left" })) end
     steps[#steps + 1] = function() hl.dispatch(hl.dsp.focus({ direction = "right" })) end
 
-    -- Firing every dispatch in one synchronous Lua call causes Hyprland to
-    -- coalesce them — only the last dispatch of each type actually applies,
-    -- so every column except the last one visited keeps its stale width.
-    -- Running one step per event-loop tick (via chained oneshot timers)
-    -- avoids the coalescing and lets each resize actually land.
+    -- Dispatches sent in one synchronous Lua call are coalesced: only the
+    -- last of each type applies. Running one step per event-loop tick
+    -- (chained 1 ms oneshot timers) lets each resize apply.
     local function run_step(i)
         if i > #steps then return end
         steps[i]()
@@ -75,12 +73,9 @@ local function _apply_col_width()
     -- After the sweep, focus is at the new (rightmost) column — stay there.
 end
 
--- Both window.open and window.destroy fire mid-processing, before Hyprland's
--- focus/layout state has settled. Dispatching the focus+colresize sweep
--- synchronously from inside the handler only reliably applies to the last
--- window touched (the new/focused one) — earlier windows in the sweep get
--- silently dropped. Deferring to the next event-loop tick via hl.timer lets
--- the handler return and the compositor settle before we dispatch anything.
+-- window.open and window.destroy fire before focus and layout state have
+-- settled, so a sweep started inside the handler only reaches the focused
+-- window. A 1 ms oneshot timer lets the handler return first.
 hl.on("window.open",      function() hl.timer(_apply_col_width, { timeout = 1, type = "oneshot" }) end)
 hl.on("window.destroy",   function() hl.timer(_apply_col_width, { timeout = 1, type = "oneshot" }) end)
 hl.on("workspace.active", function() _apply_col_width() end)

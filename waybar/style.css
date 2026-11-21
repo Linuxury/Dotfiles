@@ -1,13 +1,22 @@
 /* ===========================================================================
- * waybar/style.css — Visual design for Waybar
+ * waybar/style.css — GTK CSS stylesheet for Waybar
+ *
+ * Waybar loads ~/.config/waybar/style.css (waybar-styles(5)). Modules are styled
+ * by id (#custom-clock, #battery, ...); a module's JSON "class" output and
+ * its states become CSS classes on that id (#custom-updates.pending,
+ * #battery.warning). The palette comes from colors.css (@define-color names such
+ * as @primary, @surface, @on_surface, @on_surface_var, @tertiary, @error),
+ * which matugen regenerates from the wallpaper (colors.css.template). The
+ * rgba() literals below are fixed colours (Catppuccin Mocha values) and do not
+ * follow the palette.
  * =========================================================================== */
 @import "/home/linuxury/.config/waybar/colors.css";
 
-/* ============================================================
- * GLOBAL FONT — change here to update the entire bar
- * font-family : --bar-font
- * font-size   : --bar-font-size
- * ============================================================ */
+/* -----------------------------------------------------------------------
+ * Global font: every element inherits it from `*`. To change the bar's font,
+ * edit font-family (Nerd Font family, for the module icons) and font-size here;
+ * border/border-radius/min-height are reset so GTK defaults do not leak in.
+ * ----------------------------------------------------------------------- */
 * {
     border:        none;
     border-radius: 0;
@@ -16,10 +25,13 @@
     min-height:    0;
 }
 
+/* Fully transparent bar window; the rounded panels below carry the background. */
 window#waybar {
     background: transparent;
 }
 
+/* The three module groups (left, centre, right) are separate rounded panels:
+ * surface colour at 75% alpha (GTK alpha()), 10px radius. */
 .modules-left,
 .modules-center,
 .modules-right {
@@ -30,7 +42,9 @@ window#waybar {
 }
 
 /* -----------------------------------------------------------------------
- * Workspaces
+ * Workspaces (hyprland/workspaces)
+ * Buttons: #workspaces button, with .active (focused), .urgent and .nonempty;
+ * waybar-hyprland-workspaces(5) also lists .empty, .visible, .persistent, .special.
  * ----------------------------------------------------------------------- */
 #workspaces {
     margin: 0 4px 0 0;
@@ -66,7 +80,8 @@ window#waybar {
 }
 
 /* -----------------------------------------------------------------------
- * Window title
+ * Window title (hyprland/window)
+ * Styled through #window.
  * ----------------------------------------------------------------------- */
 #window {
     color:   @on_surface_var;
@@ -74,7 +89,8 @@ window#waybar {
 }
 
 /* -----------------------------------------------------------------------
- * Launcher + pinned apps
+ * Launcher + pinned apps (custom/launcher, custom/browser, custom/terminal, custom/files)
+ * Each module is one Nerd Font glyph; hover swaps the colour or adds a highlight.
  * ----------------------------------------------------------------------- */
 #custom-launcher {
     color:       @primary;
@@ -104,7 +120,9 @@ window#waybar {
 }
 
 /* -----------------------------------------------------------------------
- * Media (scrolling ticker)
+ * Media (custom/media-scroll, -prev, -play, -next, -sep, custom/window-sep)
+ * Waybar adds the script's JSON "class" (playing or paused) to #custom-media-scroll.
+ * min-width on the ticker keeps the bar from changing width as the text scrolls.
  * ----------------------------------------------------------------------- */
 #custom-media-scroll {
     color:     @on_surface_var;
@@ -146,7 +164,7 @@ window#waybar {
 }
 
 /* -----------------------------------------------------------------------
- * Clock
+ * Clock (custom/clock)
  * ----------------------------------------------------------------------- */
 #custom-clock {
     color:       @on_surface;
@@ -155,7 +173,9 @@ window#waybar {
 }
 
 /* -----------------------------------------------------------------------
- * Tray
+ * Tray (tray)
+ * `.passive` is the class for tray items with status Passive; -gtk-icon-effect: dim
+ * fades them (waybar-tray(5) also lists .active and .needs-attention).
  * ----------------------------------------------------------------------- */
 #tray {
     padding: 0 4px;
@@ -166,7 +186,7 @@ window#waybar {
 }
 
 /* -----------------------------------------------------------------------
- * Battle.net custom module
+ * Battle.net (custom/battlenet)
  * ----------------------------------------------------------------------- */
 #custom-battlenet {
     color:   @on_surface_var;
@@ -179,7 +199,7 @@ window#waybar {
 }
 
 /* -----------------------------------------------------------------------
- * Separator
+ * Separators (custom/sep, custom/sep-battery)
  * ----------------------------------------------------------------------- */
 #custom-sep,
 #custom-sep-battery {
@@ -189,7 +209,8 @@ window#waybar {
 }
 
 /* -----------------------------------------------------------------------
- * Right-side modules
+ * Right-side modules (volume, battery, notifications, power, layout, weather, updates)
+ * #custom-updates.pending is the "class" printed by scripts/updates.sh.
  * ----------------------------------------------------------------------- */
 #custom-volume,
 #backlight,
@@ -235,7 +256,9 @@ window#waybar {
 
 
 /* -----------------------------------------------------------------------
- * Battery states
+ * Battery states (battery)
+ * .warning and .critical come from "states" in config.jsonc (capacity thresholds 30 and 15).
+ * `blink` fades the text colour back and forth while critical.
  * ----------------------------------------------------------------------- */
 #battery.warning {
     color: @tertiary;

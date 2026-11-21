@@ -1,22 +1,30 @@
 #!/usr/bin/env bash
-# battlenet.sh — Waybar custom module for Battle.net status
+# ===========================================================================
+# waybar/scripts/battlenet.sh — waybar custom module: Battle.net window button
 #
-# Shows a clickable icon when Battle.net is running.
-# Left click: focus Battle.net
-# Right click: close Battle.net
-#
-# Only runs when Battle.net is active (exec-if in config).
+# Prints a JSON icon (return-type "json": text, tooltip) while a window with
+# class steam_app_0 and title "Battle.net" exists, else prints nothing.
+# Wired in config.jsonc as custom/battlenet:
+#   exec            this script, polled every 3 s (interval)
+#   exec-if         pgrep for Battle.net.exe: script runs only while it is up
+#   on-click        hyprctl dispatch focuswindow class:steam_app_0 (focus)
+#   on-click-right  this script with the argument `close` (closes the window)
+# Usage:
+#   battlenet.sh          print the module JSON
+#   battlenet.sh close    close the window by class (hyprctl dispatch closewindow)
+# ===========================================================================
 
+# Window class (Proton runs Battle.net under steam_app_0) and window title to match.
 CLASS="steam_app_0"
 TITLE="Battle.net"
 
-# Handle right-click close
+# `close` argument: close the window, print nothing
 if [ "$1" = "close" ]; then
     hyprctl dispatch closewindow class:$CLASS 2>/dev/null
     exit 0
 fi
 
-# Get Battle.net window address
+# Look the window up in hyprctl clients (JSON) by class and title; WIN = its address
 WIN=$(hyprctl clients -j 2>/dev/null | python3 -c "
 import json, sys
 for c in json.load(sys.stdin):
@@ -27,7 +35,7 @@ for c in json.load(sys.stdin):
 
 [ -z "$WIN" ] && exit 0
 
-# Check if focused
+# Compare with hyprctl activewindow so the tooltip says whether it already has focus
 FOCUSED=$(hyprctl activewindow -j 2>/dev/null | python3 -c "import json,sys;print(json.load(sys.stdin).get('address',''))" 2>/dev/null)
 
 if [ "$FOCUSED" = "$WIN" ]; then

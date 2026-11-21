@@ -1,11 +1,14 @@
-# Colors and window appearance (blur/shadow/decoration). Included from
-# config.toml. Base structure follows upstream's examples/config.toml
-# (fetched 2026-09-04, see dotfiles/umbriel/upstream-default.toml).
+# Colors and window decoration — palette, borders, blur and shadows.
+# Included from ../config.toml; values in config.toml win over this file.
+# Docs: docs/user/appearance.md; option list: `umbriel config schema`.
 
-# Colors stay commented so an included Noctalia-generated palette
-# (noctalia-fixed.toml, later in the include list) can supply them without
-# this file winning.
-
+# [colors] — every color Umbriel paints, "#RRGGBBAA" hex. Left commented so
+# Noctalia's generated palette (noctalia.toml, the optional include in
+# config.toml) supplies them. Keys, beyond the ones listed below:
+#   [colors.title_bar]  background(_unfocused), text(_unfocused), close /
+#                       maximize / minimize and their _glyph, _glyph_hover
+#   [colors.tab_bar]    background, text, active, active_text,
+#                       active_unfocused(_text), urgent, urgent_text
 [colors]
 # background = "#141419FF"                      # Internal panels and banners
 # text_primary = "#E8E8EAFF"                    # Primary text
@@ -18,6 +21,9 @@
 # backdrop = "#000000FF"                        # Fullscreen gaps and lock screen
 # shadow = "#0000007F"                          # Window shadow
 
+# [colors.border] — focused/unfocused color the inner border, outer the
+# optional outer ring; a window rule can override them per window.
+# scratchpad_focused / scratchpad_unfocused are not in the installed schema.
 [colors.border]
 # focused = "#7AA3FFFF"                         # Focused window border
 # unfocused = "#292933FF"                       # Unfocused window border
@@ -25,11 +31,25 @@
 # scratchpad_unfocused = "#5C4A2AFF"            # Unfocused scratchpad border
 # outer = "#1A1A1FFF"                           # Outer border ring
 
+# [colors.overview] — overview tint, per-workspace background, shortcut badge.
 [colors.overview]
 # background_tint = "#10101430"                 # Tint over the desktop background
 # workspace_background = "#00000044"            # Background behind each workspace
 # badge = "#7AA3FFFF"                           # Overview shortcut badge
 
+# [appearance] — decoration geometry (trailing comments give ranges).
+#   prefer_no_csd       advertise a preference for server-side decorations
+#   opaque_fullscreen   (true, not set) draw fullscreen windows over the
+#                       backdrop and ignore window-rule opacity
+#   [appearance.title_bar]  server-side title bar, not set: mode off (default),
+#     negotiated, on or forced; height 16-128, font (Pango), title_align
+#     left/center/right, button_position left/right, buttons (minimize,
+#     maximize, close), button_size/gap/padding/corner_radius, button_glyph
+#     always/hover/never, button_glyph_size/stroke, button_background
+#   [appearance.tab_bar]  tab-group bar, not set: style titles/indicator,
+#     position top/bottom/left/right, overflow scroll/shrink, height 2-400,
+#     font, title_align, title_format ("{title}"), hide_when_single,
+#     max_tabs, padding, gap, tab_gap, corner_radius, visible
 [appearance]
 prefer_no_csd = true                            # Prefer Umbriel's border-only decoration
 border_width = 2                                # Inner border width, 0-100 logical pixels
@@ -38,8 +58,12 @@ corner_radius = 10                              # Radius of the final decorated 
 drag_opacity = 0.75                             # Window opacity during a tiled or floating drag
 
 [appearance.blur]
-# Global blur engine. A matching window or layer rule must still opt a
-# surface into blur (see window-rules.toml / layer-rules.toml).
+# Global blur engine (installed defaults: passes 2, radius 5). A window or
+# layer rule must still opt each surface into blur (window-rules.toml,
+# layer-rules.toml).
+#   enabled     false turns blur off and frees per-output effect buffers
+#   optimized   share one cached background blur per output; rules can set
+#               blur_optimized = false for true per-window blur
 enabled = true
 optimized = true                                # Reuse one cached background blur per output
 passes = 3                                      # Blur passes, 0-8
@@ -49,6 +73,9 @@ brightness = 0.9                                # 0.0-2.0
 contrast = 0.9                                  # 0.0-2.0
 saturation = 1.1                                # 0.0-2.0
 
+# [appearance.shadow] — drop shadow under non-fullscreen windows; it falls on
+# everything below, but tiled windows never shadow each other. A window rule
+# can turn it on or off per window.
 [appearance.shadow]
 enabled = true                                  # Draw shadows behind non-fullscreen windows
 softness = 10                                   # Gaussian softness, 0-200; 0 is a hard edge

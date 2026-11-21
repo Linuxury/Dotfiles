@@ -1,10 +1,41 @@
-# Match windows by application ID, title, XDG tag, content type, or focus
-# state. Opening settings apply once; effects and output policies update
-# while mapped. Included from config.toml. Base structure follows
-# upstream's examples/config.toml (fetched 2026-09-04, see
-# dotfiles/umbriel/upstream-default.toml) — the rules below (blur-all,
-# Noctalia windows, PiP, Steam toasts) are upstream's own active defaults,
-# not just examples, kept enabled as shipped.
+# Window rules — per-application placement, size, decoration and effects.
+# Included from ../config.toml. Docs: docs/user/window-rules.md; option list:
+# `umbriel config schema` (window_rule[]). Run `umbriel windows` (or
+# `umbriel focused-window`) to read live app IDs, titles, tags and content
+# types.
+#
+# Every matching rule contributes; when two set the same key, the later rule
+# wins. Selectors are optional (none = every window). Regexes match any part
+# of the value, so anchor with ^ and $; app_id, title and xdg_tag also take
+# an array of patterns (any one matching).
+#   Selectors   match.app_id, match.title, match.xdg_tag, match.content_type
+#               (none, photo, video, game), match.layout (scrolling, dwindle,
+#               master, stacking), match.is_focused, is_floating, is_pinned,
+#               is_dialog, is_scratchpad, is_maximized_to_edges, is_alone
+#               (alone in the tiled layout), is_only_window (floating
+#               included), is_cast_target, at_startup (first 60 s)
+#   On open     default_workspace (index or name), default_output,
+#               default_floating, default_floating_size {width, height}
+#               (fractions 0.1-1.0), default_floating_size_px {width,
+#               height}, default_position {x, y, anchor: top_left,
+#               top_right, bottom_left, bottom_right, top, bottom, left,
+#               right, center}, default_focused, default_pinned,
+#               default_fullscreen, default_maximize,
+#               default_maximize_to_edges, default_scratchpad,
+#               default_scrolling_column (+ _order), default_scrolling_extent
+#               (0.1-4.0) / _extent_px, default_column_display
+#               (normal/tabbed), attach_to_parent
+#   While open  opacity, blur, blur_optimized, blur_popups,
+#               blur_ignore_alpha, dim_behind, shadow, border_width,
+#               outer_border_width, corner_radius, border_color_focused /
+#               unfocused / outer, border_effect, window_effect, title_bar
+#               (on/negotiated/forced/off), title_bar_buttons, vrr
+#               (disabled/always/fullscreen), tearing, hdr (off/on/auto/
+#               fullscreen), focus_on_activate, confine_pointer,
+#               allow_shortcuts_inhibit, background_render, block_capture,
+#               touchpad_scroll_factor
+# The blur-all, Noctalia, PiP and Steam-toast rules come from upstream's
+# packaged example; the rest are local.
 
 # Blur every window. Keep this selectorless rule first so later matching
 # rules can override individual blur settings.
@@ -12,28 +43,25 @@
 blur = true
 blur_optimized = false
 
-# Single tiled window fills more of the screen; shrinks back to the base
-# 0.5 fraction (layout.scrolling.default_extent_fraction) the instant a
-# second column opens. Replaces the parked auto-column-width.py script —
-# see ~/Jarvis/.Projects/Umbriel-Auto-Column-Width.md for why the script
-# never worked reliably.
+# A lone tiled column takes 0.75 of the viewport; the effect is removed when
+# a second column appears (back to layout.scrolling.default_extent_fraction)
+# and restored when the column is alone again.
 [[window_rule]]
 match.is_alone = true
 default_scrolling_extent = 0.75
 
-# Steam client -> workspace 3. Games -> workspace 2. Ported from
-# dotfiles/hypr/modules/windowrules.lua's precedent: Steam (XWayland-only,
-# no native Wayland client) reports app_id "steam" for the client itself;
-# Proton/Steam games report "steam_app_<appid>" via XWayland, or the
-# "proton-game" XDG toplevel tag for native Wayland titles.
+# Steam client -> workspace 3, games -> workspace 2 (same split as
+# dotfiles/hypr/modules/windowrules.lua). Steam runs under Xwayland and
+# reports app_id "steam"; Proton/Steam games report "steam_app_<appid>" via
+# Xwayland, or the "proton-game" XDG toplevel tag when native Wayland.
 [[window_rule]]
 match.app_id = "^steam$"
 default_workspace = 3
 
-# Steam's windows all share app_id "steam", so they're told apart by title.
-# Static placement — Umbriel can't restore a window's last position on its
-# own. Chat windows are titled with the friend's name, so they can't be
-# matched and open at the default spot.
+# Steam's windows all share app_id "steam", so they are told apart by title
+# and given fixed floating positions and pixel sizes (Umbriel does not
+# remember a window's last position). Chat windows are titled with the
+# contact's name, so they cannot be matched and open at the default spot.
 [[window_rule]]
 match.app_id = "^steam$"
 match.title = "^Steam$"
@@ -60,11 +88,10 @@ default_workspace = 2
 match.xdg_tag = "^proton-game$"
 default_workspace = 2
 
-# Minecraft (PrismLauncher) -> workspace 2, same as other games. LWJGL/GLFW's
-# window class is literally "Minecraft* <version>" (asterisk included, a
-# long-standing quirk), reported via XWayland since it has no native Wayland
-# backend. Matched on the "Minecraft*" prefix so the rule survives version
-# bumps. Confirmed with `umbriel windows`.
+# Minecraft (PrismLauncher) -> workspace 2, same as other games. LWJGL/GLFW
+# reports the window class as "Minecraft* <version>" (literal asterisk) via
+# Xwayland; the pattern matches the "Minecraft*" prefix, so it covers every
+# version (single-quoted TOML literal, so the regex gets \* as-is).
 [[window_rule]]
 match.app_id = '^Minecraft\*.*$'
 default_workspace = 2
@@ -81,15 +108,16 @@ match.app_id = "^dev.noctalia.UmbrielSharePicker$"
 default_floating = true
 default_floating_size_px = { width = 800, height = 600 }
 
-# Update terminal of the nixos-updates Noctalia plugin: its `terminal` setting
-# is `kitty --class nixos-updates -e` (the old update_command hand-off used
-# `nix-updates`, kept so either spelling floats)
+# Update terminal of the nixos-updates Noctalia plugin (`kitty --class
+# nixos-updates -e`); the nix-updates spelling is matched too so either
+# class floats.
 [[window_rule]]
 match.app_id = "^(nixos-updates|nix-updates)$"
 default_floating = true
 default_floating_size_px = { width = 1100, height = 750 }
 
-# Browsers expose no semantic PiP role or global position control.
+# Picture-in-picture: browsers expose no PiP role or position control, so
+# match the title and float it in the bottom-right corner.
 [[window_rule]]
 match.title = "^(Picture-in-Picture|Picture in picture)$"
 default_floating = true
@@ -104,6 +132,11 @@ default_position = { x = 0, y = 0, anchor = "bottom_right" }
 default_focused = false
 default_pinned = true
 
+# ─────────────── Upstream's example recipes (commented) ──────────────────
+# default_size, default_width and default_height below are not in the
+# installed schema; use default_floating_size_px / default_floating_size
+# (fractions) or default_scrolling_extent(_px) instead.
+#
 # Optional placement recipe. Output names follow the same rules as [output.*].
 
 # [[window_rule]]

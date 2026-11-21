@@ -1,9 +1,10 @@
-# All-workspaces overview and pointer-triggered corner actions. Included
-# from config.toml. Base structure follows upstream's examples/config.toml
-# (fetched 2026-09-04, see dotfiles/umbriel/upstream-default.toml) — the
-# top-left hot corner is upstream's own active default, not just an
-# example.
+# Overview and hot corners — the all-workspaces overview and actions run when
+# the pointer rests in an output corner. Included from ../config.toml.
+# Docs: docs/user/workspaces-overview.md, docs/user/keybinds.md#hot-corners.
 
+# [overview] — trailing comments describe each key; also, not set:
+#   scroll_factor_horizontal / scroll_factor_vertical  (1.0, 0.1-10.0)
+#                                     gesture and wheel sensitivity
 [overview]
 zoom = 0.5                                      # Workspace scale in overview, 0.1-0.75
 # Pinned windows stay hidden until overview closes; visible scratchpads are dismissed.
@@ -12,6 +13,15 @@ zoom = 0.5                                      # Workspace scale in overview, 0
 # shortcuts = true                              # Show keyboard shortcut badges on windows
 # shortcut_keys = "1234567890"                  # Badge keys in preference order
 
+# Hot corners — one table per corner (top_left, top_right, bottom_left,
+# bottom_right); every corner is disabled by default.
+#   enabled   turn the corner on
+#   delay_ms  rest time before firing, 0-10000; 0 fires immediately
+#   action    any action from docs/user/actions.md, written as words
+#             ("spawn <cmd...>", "overview-toggle")
+# Corners are inactive while the output's focused window is fullscreen or an
+# exclusive-keyboard layer (a launcher) is open. Only top_left is on here,
+# matching upstream's packaged example.
 [hot_corners.top_left]
 enabled = true                                  # Open the overview after resting here
 delay_ms = 500                                  # 0 activates immediately; maximum is 10000

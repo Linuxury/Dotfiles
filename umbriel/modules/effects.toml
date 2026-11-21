@@ -1,12 +1,18 @@
-# Shader effects — every slot is off until a preset is selected below.
-# Included from config.toml. Docs: https://docs.noctalia.dev/umbriel/effects/
+# Shader effects — GLSL presets for window borders, windows, whole outputs
+# and the pointer. Included from ../config.toml. Docs: docs/user/effects.md.
+# Every slot is empty ("") by default; only the border slot is selected below.
 #
-# Presets ship with the umbriel package; modules/compositors/umbriel/default.nix
-# links them to a stable path via environment.pathsToLink. Including a preset
-# only defines it — nothing renders until it's selected. Optional, so a preset
-# upstream renames or drops won't invalidate the whole config (the selection
-# below would then warn "unknown effect" instead).
-
+# Presets ship in the umbriel package under share/umbriel/effects/<kind>/<name>;
+# nixos-config modules/compositors/umbriel/default.nix links them to
+# /run/current-system/sw via environment.pathsToLink. Including a preset only
+# defines it; nothing renders until a slot selects it. The includes are
+# optional, so a preset missing from the package leaves the config valid and
+# the selection below warns "unknown effect" instead. Bundled presets:
+#   border     pulse, audio (brightness follows the external audio spectrum)
+#   window     scanlines
+#   screen     vignette
+#   cursor     glow, trail, trail-path
+#   animation  reveal (windows_in / windows_out), squash (windows_move)
 [include.optional]
 files = [
   "/run/current-system/sw/share/umbriel/effects/border/pulse/effect.toml",
@@ -16,23 +22,42 @@ files = [
   "/run/current-system/sw/share/umbriel/effects/animation/squash/effect.toml",
 ]
 
+# [effects] — slot selection; each takes a preset or pool name ("" = off).
+#   border            focused-window border (every window with border_unfocused)
+#   window            applied to every window
+#   screen            applied to every output
+#   screen_cast       replaces screen on an output while it is captured whole
+#   cursor            pointer effect, shared across outputs
+#   border_unfocused  (false) draw the border effect on unfocused windows too
+#   max_fps           (0) cap 0-240 for frames drawn only for an effect;
+#                     0 follows the refresh rate
+#   in_capture        (false) include window/screen/cursor effects in captures
+#   [effects.pool.<name>]  kind, choose = [presets...], selection
+#                     unused_first / round_robin / random
 [effects]
 border = "pulse"                                # Breathing glow in Noctalia's palette colors
 # cursor = "glow"                               # Soft light around the pointer
 # screen = "vignette"                           # Darkened screen edges (per output: [output."…"] screen_effect)
 # window = "scanlines"                          # CRT lines over windows (per window: window_effect rule)
 
-# Cursor glow — defined here instead of included, so radius can be tuned
-# (presets can't be redefined across files). Same shader and settings as the
-# bundled cursor/glow preset, except the radius.
+# Cursor glow — defined here instead of included so radius can differ: one
+# preset name may not be defined in two files. Same shader and keys as the
+# bundled cursor/glow/effect.toml, which sets radius = 96. Preset keys:
+#   kind     animation, border, window, screen or cursor (required)
+#   shader   GLSL source path, max 256 KiB
+#   palette  (false) feed the [colors] accent/status colors to the shader
+#   radius   cursor: padding around the pointer 0-4096; 0 covers the output
+#   border-only: padding, speed (0-10), animated, overlay (window preset),
+#   light.spread / light.intensity / light.threshold
 [effects.preset.glow]
 kind = "cursor"
 shader = "/run/current-system/sw/share/umbriel/effects/cursor/glow/shader.glsl"
 palette = true
 radius = 24                                     # Logical px; bundled preset uses 96
 
-# Animation presets select per event, not under [effects]. These merge into
-# the [animation.*] tables in animation.toml.
+# Animation presets are selected per event with `effect`, not under
+# [effects]; these tables merge into the [animation.*] tables in
+# animation.toml.
 # [animation.windows_in]
 # effect = "reveal"                             # Wipe in from the left on open/close
 # [animation.windows_move]

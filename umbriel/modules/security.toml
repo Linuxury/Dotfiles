@@ -1,12 +1,18 @@
-# Sandboxed clients receive a restricted Wayland global set. Grant extra
-# globals only to a narrowly matched application that genuinely needs
-# them. Included from config.toml. Base structure follows upstream's
-# examples/config.toml (fetched 2026-09-04, see
-# dotfiles/umbriel/upstream-default.toml).
-
-# Grant a sandboxed clipboard manager both data-control protocol variants.
-# Uncomment the complete block and replace the example application ID.
-
+# Security context rules — sandboxed (e.g. Flatpak) Wayland clients get a
+# restricted global set; a [[security_context_rule]] grants extra globals to
+# matching apps. Included from ../config.toml. Nothing is granted here: the
+# block below is upstream's example, left commented.
+# Docs: docs/user/security.md#per-application-grants.
+#   match.sandbox_engine  regex (or array) matched against the whole engine name
+#   match.app_id          regex (or array) matched against the whole app ID
+#   allow_globals         ([]) extra Wayland globals to expose
+# Selectors are optional; a rule without them applies to every restricted
+# client. Rules are additive, cannot remove the base set, and
+# wp_security_context_manager_v1 stays blocked. Changes reach new connections
+# only, so restart the app. Invalid entries are ignored with a warning.
+#
+# Example: a sandboxed clipboard manager gets both data-control variants
+# (many use zwlr_, so grant both unless the app is known to use only ext_).
 # [[security_context_rule]]
 # match.sandbox_engine = 'org\.flatpak'
 # match.app_id = 'org\.example\.ClipboardManager'

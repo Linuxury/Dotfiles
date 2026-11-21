@@ -1,21 +1,23 @@
-/* Requires toolkit.legacyUserProfileCustomizations.stylesheets = true
-   (dotfiles/firefox/policies.json) — Firefox ignores this file otherwise.
-
-   #personal-bookmarks isn't the actual layout container — it wraps a
-   <scrollbox id="PlacesToolbarItems" flex="1"> that grows to fill by
-   default (flex="1" is an XML attribute on the element, not just CSS),
-   which is why constraining only the outer toolbaritem doesn't visibly
-   center anything. Both need constraining, and !important is needed
-   since Firefox's own browser-shared.css targets these same IDs. */
+/* ===========================================================================
+ * firefox/userChrome.css — Firefox UI (chrome) tweaks
+ *
+ * Firefox reads it only when toolkit.legacyUserProfileCustomizations.stylesheets
+ * is true (set in firefox/policies.json). Here: a bookmarks toolbar that is
+ * centred and auto-hides.
+ *
+ * #personal-bookmarks wraps <scrollbox id="PlacesToolbarItems" flex="1">, and
+ * that scrollbox is what stretches to fill the toolbar (flex="1" is an XML
+ * attribute on the element). Both are therefore set to `flex: 0 0 auto`, and
+ * !important is used because Firefox's browser-shared.css targets the same ids.
+ * =========================================================================== */
 
 #PersonalToolbar {
   display: flex !important;
   justify-content: center !important;
 
-  /* Auto-hide: collapsed by default, reveals on hovering the toolbar
-     itself or #nav-bar right above it (confirmed siblings under
-     #navigator-toolbox) — a generous "near the area" trigger instead
-     of needing to hit a 1px sliver. */
+  /* Auto-hide: collapsed (max-height 0) until the pointer is over the toolbar
+     itself or over #nav-bar just above it (both are children of
+     #navigator-toolbox), then it grows to 32px (see the :hover rule below). */
   max-height: 0px !important;
   min-height: 0px !important;
   overflow: hidden !important;

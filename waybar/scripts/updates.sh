@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ===========================================================================
-# waybar/scripts/updates.sh — NixOS pending rebuild indicator
+# waybar/scripts/updates.sh — waybar custom module: pending NixOS rebuild
 #
-# Compares the mtime of flake.lock against /run/current-system.
-# If flake.lock is newer, a rebuild is pending.
-#
-# Returns JSON for waybar (return-type: json):
-#   { "text": "...", "tooltip": "...", "class": "ok|pending" }
-#
-# Waybar calls this every hour (interval: 3600 in config.jsonc).
+# Compares the mtime of ~/nixos-config/flake.lock with /run/current-system
+# (stat -c %Y, seconds; a missing path counts as 0). A newer flake.lock means a
+# rebuild is pending.
+# Output (return-type "json"):
+#   pending  {"text": "󰚰  rebuild", "tooltip": "...", "class": "pending"}
+#   ok       {"text": "", "class": "ok"}   (empty: module shows nothing)
+# Wired in config.jsonc as custom/updates, interval 3600 (hourly).
 # ===========================================================================
 
 FLAKE_DIR="$HOME/nixos-config"

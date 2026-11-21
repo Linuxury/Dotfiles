@@ -1,4 +1,14 @@
--- Bootstrap lazy.nvim
+-- init.lua — Neovim entry point (nvim 0.12; plugin manager: lazy.nvim).
+--   1. Install lazy.nvim into stdpath("data")/lazy if it is missing (shallow
+--      git clone of the `stable` branch) and add it to the runtimepath.
+--   2. Load lua/options.lua and lua/keymaps.lua.
+--   3. lazy.setup("plugins"): every spec file in lua/plugins/ is loaded.
+--      lazy.nvim options set below:
+--        change_detection.notify = false   no message when a spec file changes
+--        checker.enabled = false           no background update checks
+--        rocks.hererocks = false           no hererocks install for luarocks
+--      Not set: install, ui, performance, defaults, lockfile (default
+--      stdpath("config")/lazy-lock.json; .gitignore leaves it untracked).
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({
@@ -18,7 +28,7 @@ require("lazy").setup("plugins", {
   rocks = { hererocks = false },
 })
 
--- Colorscheme comes from lua/plugins/base16.lua (RRethy/base16-nvim) +
--- lua/matugen.lua (Noctalia's "neovim" community template output, gitignored
--- — regenerated on every wallpaper change). No explicit setup call needed
--- here; base16.lua's plugin config runs matugen.setup() on load.
+-- Colorscheme: lua/plugins/base16.lua loads RRethy/base16-nvim and runs
+-- require("matugen").setup() from lua/matugen.lua, a generated file (Noctalia's
+-- "neovim" template output, regenerated on each wallpaper change, gitignored).
+-- No colorscheme call is needed here.

@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 # ===========================================================================
-# waybar/scripts/sysinfo.sh — Compact CPU / RAM / Disk in one module
+# waybar/scripts/sysinfo.sh — one-line CPU / RAM / disk readout
 #
-# Always shows all three stats on one line.
-# CPU usage via /proc/stat diff against cached previous reading.
+# Prints {"text": "<cpu>% · <ram>% · <disk>%", "tooltip": "CPU / RAM (GiB) / Disk"}.
+#   CPU   busy share between this call and the previous one: /proc/stat totals
+#         are diffed against the last pair stored in CPU_CACHE (0 on the first call)
+#   RAM   used/total from `free -m`
+#   Disk  used share of / from `df /`
+# Not referenced by config.jsonc; waybar would run it as a custom module with
+# return-type "json".
 # ===========================================================================
 
 CPU_CACHE="/tmp/waybar-cpu-prev"

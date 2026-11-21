@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
-# volume.sh — waybar volume module with custom icon thresholds
-# Ranges: 0% | 1-39% | 40-59% | 60-99% | 100%
+# ===========================================================================
+# waybar/scripts/volume.sh — waybar custom module: default sink volume with an
+# icon per range
+#
+# Reads wpctl get-volume @DEFAULT_AUDIO_SINK@. Prints {"text": "<icon> <pct>",
+# "tooltip": "Volume: <pct>%", "percentage": <pct>} (return-type "json").
+# Icon by range: muted | 0% | 1-39% | 40-59% | 60-99% | 100% and above.
+# Wired in config.jsonc as custom/volume (interval 2; click toggles mute, scroll
+# raises/lowers 5% with wpctl).
+# ===========================================================================
 
 vol_raw=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
 muted=$(echo "$vol_raw" | grep -c MUTED)

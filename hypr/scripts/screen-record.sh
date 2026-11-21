@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
 # ===========================================================================
-# screen-record.sh — Toggle screen recording with wf-recorder
+# screen-record.sh — start or stop a screen recording with wf-recorder
 #
 # Usage: screen-record.sh [area|fullscreen]
-#   area        — select region with slurp (default)
-#   fullscreen  — record entire screen
+#   area        select a region with slurp (default)
+#   fullscreen  record the whole output
+# Bound to SUPER+ALT+R (area) and SUPER+ALT+SHIFT+R (fullscreen) in
+# modules/keybinds.lua. Running it while a recording is active stops that
+# recording (SIGINT, which makes wf-recorder finish the file).
+# Saves to ~/Videos/Screen Recordings/recording-YYYYMMDD-HHMMSS.mp4; the
+# recorder PID is kept in /tmp/screen-record.pid.
 #
-# Press keybind again to stop recording.
-# Saves to ~/Videos/Screen Recordings/recording-YYYYMMDD-HHMMSS.mp4
+# wf-recorder flags used: -g "x,y WxH" region, -f output file (container
+# from the extension). Others: -a audio, -o output name, -c codec,
+# -r framerate, -d device (GPU encoding), -F ffmpeg filter.
 # ===========================================================================
 
 set -euo pipefail
@@ -16,7 +22,7 @@ RECORD_DIR="$HOME/Videos/Screen Recordings"
 PID_FILE="/tmp/screen-record.pid"
 MODE="${1:-area}"
 
-# If already recording, stop it
+# A live PID in the PID file means a recording is running: stop it
 if [ -f "$PID_FILE" ]; then
     PID=$(cat "$PID_FILE")
     if kill -0 "$PID" 2>/dev/null; then
@@ -31,7 +37,7 @@ fi
 mkdir -p "$RECORD_DIR"
 FILENAME="$RECORD_DIR/recording-$(date +%Y%m%d-%H%M%S).mp4"
 
-# Build wf-recorder command
+# Start wf-recorder in the background
 case "$MODE" in
     area)
         GEOMETRY=$(slurp 2>/dev/null) || exit 1

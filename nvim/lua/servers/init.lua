@@ -1,4 +1,6 @@
--- LSP capabilities from blink.cmp
+-- Start each language server with blink.cmp's completion capabilities.
+-- lua/servers/<name>.lua returns function(capabilities); add a server by
+-- creating the file and a require line here.
 local capabilities = require("blink.cmp").get_lsp_capabilities(
   vim.lsp.protocol.make_client_capabilities()
 )

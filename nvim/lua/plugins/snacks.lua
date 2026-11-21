@@ -2,6 +2,9 @@ return {
   "folke/snacks.nvim",
   priority = 1000,
   lazy = false,
+  -- snacks.nvim — picker, explorer, dashboard-style UI pieces; loaded at startup
+  -- (lazy = false, priority = 1000). Each opts entry turns one module on
+  -- (enabled = true) or off.
   ---@type snacks.Config
   opts = {
     bigfile    = { enabled = true },
@@ -110,7 +113,7 @@ return {
   },
 
   keys = {
-    -- Explorer & smart finder
+    -- Explorer and smart finder (<leader>e, <leader><space>, buffers, grep, ...)
     { "<leader>e",       function() Snacks.explorer({ cwd = vim.g.snacks_explorer_cwd }) end, desc = "File Explorer" },
     { "<leader><space>", function() Snacks.picker.smart() end,         desc = "Smart Find Files" },
     { "<leader>,",       function() Snacks.picker.buffers() end,       desc = "Buffers" },
@@ -118,14 +121,14 @@ return {
     { "<leader>:",       function() Snacks.picker.command_history() end, desc = "Command History" },
     { "<leader>n",       function() Snacks.picker.notifications() end, desc = "Notifications" },
 
-    -- Find
+    -- Find: files, recent, projects, config files
     { "<leader>ff", function() Snacks.picker.files() end,                               desc = "Find Files" },
     { "<leader>fr", function() Snacks.picker.recent() end,                              desc = "Recent Files" },
     { "<leader>fp", function() Snacks.picker.projects() end,                            desc = "Projects" },
     { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Config Files" },
     { "<leader>fb", function() Snacks.picker.buffers() end,                             desc = "Buffers" },
 
-    -- Search
+    -- Search: grep and related pickers
     { "<leader>sg", function() Snacks.picker.grep() end,                              desc = "Grep" },
     { "<leader>sw", function() Snacks.picker.grep_word() end, mode = { "n", "x" },   desc = "Grep Word" },
     { "<leader>sh", function() Snacks.picker.help() end,                              desc = "Help" },
@@ -134,13 +137,13 @@ return {
     { "<leader>sD", function() Snacks.picker.diagnostics_buffer() end,                desc = "Buffer Diagnostics" },
     { "<leader>sR", function() Snacks.picker.resume() end,                            desc = "Resume Picker" },
 
-    -- Git
+    -- Git pickers
     { "<leader>gl", function() Snacks.picker.git_log() end,        desc = "Git Log" },
     { "<leader>gs", function() Snacks.picker.git_status() end,     desc = "Git Status" },
     { "<leader>gB", function() Snacks.gitbrowse() end, mode = { "n", "v" }, desc = "Git Browse" },
     { "<leader>gg", function() Snacks.lazygit() end,               desc = "Lazygit" },
 
-    -- LSP (via picker)
+    -- LSP navigation through the picker (definitions, references, ...)
     { "gd",  function() Snacks.picker.lsp_definitions() end,      desc = "Go to Definition" },
     { "gD",  function() Snacks.picker.lsp_declarations() end,     desc = "Go to Declaration" },
     { "gr",  function() Snacks.picker.lsp_references() end,       desc = "References" },
@@ -149,7 +152,8 @@ return {
     { "<leader>ss", function() Snacks.picker.lsp_symbols() end,   desc = "LSP Symbols" },
     { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "Workspace Symbols" },
 
-    -- Misc
+    -- Misc: terminal (Ctrl-/), zen, zoom, scratch buffer, delete buffer, rename
+    -- file, dismiss notifications, ]] / [[ next/previous reference
     { "<c-/>",      function() Snacks.terminal() end,               desc = "Terminal" },
     { "<leader>z",  function() Snacks.zen() end,                    desc = "Zen Mode" },
     { "<leader>Z",  function() Snacks.zen.zoom() end,               desc = "Zoom" },

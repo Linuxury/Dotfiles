@@ -1,12 +1,25 @@
-# Keyboards, pointers, tablets, cursor behavior, and focus policy. Included
-# from config.toml. Base structure follows upstream's examples/config.toml
-# (fetched 2026-09-04, see dotfiles/umbriel/upstream-default.toml).
+# Input — keyboards, touchpads, mice, tablets, cursor and focus policy.
+# Included from ../config.toml. Docs: docs/user/input.md; option list:
+# `umbriel config schema`. Trailing comments give each set key's range.
 
+# [input] — also, not set:
+#   client_window_drag      (true) false ignores app move requests (CSD
+#                           title bars, browser tab strips)
+#   window_drag_toggle      (none) other mouse button during a drag toggles
+#                           floating or pinned on drop
+#   mod_right_double_click  (none) maximize: second Mod+right-click toggles
+#                           maximize
+#   [input.drag_edge_scroll]  scroll a layout while dragging near its ends:
+#                           enabled, trigger_zone, delay_ms, max_speed
+#   [input.touch]           enabled, map_to_output (touchscreens)
 [input]
 middle_click_paste = true                       # Primary-selection paste; applies on reload
 
 [input.keyboard]
 # Physical keyboard XKB settings. Virtual keyboards provide their own keymaps.
+# With none of layout/variant/options/model set, the localectl X11 keymap is
+# used. model ("") is also accepted. Installed default for numlock_toggle is
+# false.
 layout = ""                                     # Example: "us,de"; empty uses the system default
 variant = ""                                    # Example: ",nodeadkeys" for two layouts
 options = ""                                    # Example: "grp:alt_shift_toggle"
@@ -15,6 +28,11 @@ repeat_delay = 600                              # Delay before repeating, 0-1000
 numlock_toggle = true                           # Enable on connect; false preserves the current state
 track_layout = "global"                         # global, or window for per-surface layout memory
 
+# [input.touchpad] — keys left unset keep the libinput device default.
+# Also, not set: enabled, tap_and_drag, drag_lock (off/timeout/sticky),
+# left_handed, scroll_method (two_finger/edge/none), click_method
+# (button_areas/clickfinger), tap_button_map (left_right_middle /
+# left_middle_right); scroll_factor may be a table { horizontal, vertical }.
 [input.touchpad]
 tap = true                                      # Tap-to-click
 # natural_scroll = true                         # Omit to preserve the libinput default
@@ -24,12 +42,18 @@ tap = true                                      # Tap-to-click
 # disable_while_typing = true                   # Omit to preserve the libinput default
 # disable_on_external_mouse = true              # Native sessions only
 
+# [input.mouse] — also, not set: left_handed, scroll_button (MouseLeft,
+# MouseRight, MouseMiddle, MouseBack, MouseForward: hold to turn motion into
+# scrolling) and scroll_button_lock (press toggles that mode instead).
+# accel_profile is flat or adaptive.
 [input.mouse]
 # natural_scroll = false                        # Omit to preserve the libinput default
 # accel_profile = "flat"                        # Omit to preserve the libinput default
 sensitivity = 0.0                               # Pointer speed, -1.0 to 1.0
 scroll_wheel_step = 60                          # Logical pixels per layout-scroll action, 1-1000
 
+# [input.tablet] — map_to_output takes a connector or monitor name;
+# left_handed flips the tablet orientation.
 [input.tablet]
 enabled = true                                  # False disables tablet tools and pads
 # map_to_output = "LG Electronics LG ULTRAGEAR+ 410NTDVAJ338"
@@ -38,6 +62,8 @@ enabled = true                                  # False disables tablet tools an
 # left_handed = false
 # calibration_matrix = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
 
+# [input.cursor] — also hide_on_touch (true, not set): hide on touchscreen
+# input. theme and size are announced to X11 apps via XSETTINGS.
 [input.cursor]
 theme = ""                                      # Empty uses environment or default Xcursor theme
 size = 24                                       # Logical size, 1-512
@@ -46,6 +72,13 @@ follows_focus = false                           # Warp to targets selected by fo
 hide_when_typing = false                        # Keep visible while typing
 hide_timeout_ms = 0                             # Idle hide timeout, 0 disables; maximum is 3600000
 
+# [input.focus] — follows_mouse:
+#   off     only clicks, keybinds and activation move focus
+#   sloppy  moving onto a window focuses it; focus given elsewhere stays
+#           while the pointer rests over its window
+#   always  every pointer motion (and a scene change under a still pointer)
+#           focuses the window under it
+# hover_raises (true, not set): false lets hover focus without raising.
 [input.focus]
 follows_mouse = "off"                            # "off", "sloppy" or "always": focus the pointer target after pointer motion
 # Refuse hover focus when revealing a window would scroll farther than this

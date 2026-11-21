@@ -1,10 +1,18 @@
-# Match layer-shell surfaces such as panels, launchers, notifications, and
-# desktop widgets by namespace. Run `umbriel layers` to inspect live names.
-# Included from config.toml. Base structure follows upstream's
-# examples/config.toml (fetched 2026-09-04, see
-# dotfiles/umbriel/upstream-default.toml) — this rule is upstream's own
-# active default for Noctalia surfaces, not just an example.
-
+# Layer rules — effects for layer-shell surfaces (bars, launchers,
+# notifications, widgets). Included from ../config.toml. Run `umbriel layers`
+# to list live namespaces. Docs: docs/user/layer-rules.md.
+#   match.namespace    regex (or array) on the surface namespace
+#   match.layer        background, bottom, top or overlay
+#   match.at_startup   true: only during the first 60 seconds; false: after
+#   blur               blur behind the surface (needs [appearance.blur])
+#   blur_popups        also blur its XDG popups
+#   blur_ignore_alpha  skip blur where alpha is below this, 0.0-1.0
+#   blur_optimized     override the global optimized-blur choice; false gives
+#                      exact per-surface blur
+#   dim_behind         (0.0) darken content below this layer, 0.0-1.0
+#
+# Blur Noctalia's bar, notifications, dock, panels, OSD and desktop widgets.
+# Same rule as upstream's packaged example.
 [[layer_rule]]
 match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd|desktop-widget-[^\"]*)$"
 blur = true

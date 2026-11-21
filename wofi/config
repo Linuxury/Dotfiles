@@ -1,3 +1,21 @@
+# wofi/config — launcher settings (keys per wofi(5), the command-line flags in snake case).
+# `#` starts a comment; `\#` is a literal #. Used by `wofi --show drun` (the bar's
+# launcher button); the power menu passes its own flags (see waybar/scripts/powermenu.sh).
+#   width, height     size in px, or % with a trailing % (defaults 50% x 40%)
+#   location          center, top_left, top, top_right, right, bottom_right, bottom,
+#                     bottom_left, left (default center)
+#   show              mode: run, drun, dmenu (or a comma list for combi)
+#   prompt            text in the search box (default: the mode name)
+#   filter_rate       ms between result updates (default 100)
+#   allow_markup      render Pango markup in entries (default false)
+#   no_actions        hide multi-action entries (default false)
+#   halign            alignment of the scrolled area: fill, start, end, center
+#   orientation       vertical or horizontal (default vertical)
+#   content_halign    alignment of each entry: fill, start, end, center
+#   insensitive       case-insensitive search (default false)
+#   allow_images      show icons (default false); image_size in px (default 32)
+#   gtk_dark          use the dark variant of the GTK theme (default false)
+#   layer             background, bottom, top or overlay (default top)
 width=620
 height=400
 location=center

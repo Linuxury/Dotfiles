@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
-# layout.sh — Waybar layout indicator and cycler
+# ===========================================================================
+# waybar/scripts/layout.sh — waybar custom module: Hyprland layout of the
+# current workspace
 #
+# Wired in config.jsonc as custom/layout (return-type "json", interval 2,
+# on-click runs this script with `cycle`).
 # Usage:
-#   layout.sh          → output current workspace layout as waybar JSON
-#   layout.sh cycle    → cycle to next layout and apply to current workspace
-#
-# Cycle order: scrolling → dwindle → master → scrolling
+#   layout.sh          print {"text": <icon>, "tooltip": <name>} for the
+#                      workspace's tiledLayout (hyprctl activeworkspace -j)
+#   layout.sh cycle    switch the workspace to the next layout:
+#                      scrolling -> dwindle -> master -> scrolling
+#                      (any other current layout goes to dwindle)
+# ===========================================================================
 
 active_json=$(hyprctl activeworkspace -j 2>/dev/null)
 LAYOUT=$(printf '%s' "$active_json" | grep -oP '"tiledLayout":\s*"\K[^"]+')

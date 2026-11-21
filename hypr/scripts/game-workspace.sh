@@ -1,25 +1,29 @@
 #!/usr/bin/env bash
-# game-workspace.sh — Move games/fullscreen windows to WS 2 after launchers place them.
+# game-workspace.sh — move game windows to workspace 2 once they settle
 #
-# Why a script instead of a windowrule:
-#   Game launchers (Steam, Prism) call set_fullscreen after Hyprland evaluates
-#   windowrules, overriding workspace placement. The fullscreen=true windowrule
-#   fires at window creation (too early — the window isn't fullscreen yet).
-#   This script handles both cases:
+# Started once from modules/autostart.lua (hyprland.start). Window rules are
+# checked when a window opens, before launchers such as Steam or Prism make
+# it fullscreen, so they cannot place these windows reliably. This script
+# reads Hyprland's event socket (socket2, via socat) and handles each event
+# in the background:
 #
-#   openwindow — known game classes that settle before going fullscreen
-#     - xdgTag "proton-game"              — Steam/Proton native Wayland games
-#     - class "^Minecraft"                — Minecraft via Prism Launcher (XWayland)
-#     - class "steam_app_0", title != ""  — Battle.net games; tray icon has empty title
+#   openwindow>>ADDRESS,WORKSPACE,CLASS,TITLE
+#     After 1 s, moves the window if it is a known game:
+#       xdgTag "proton-game"              Steam/Proton native Wayland games
+#       class starting with "Minecraft"   Minecraft via Prism Launcher
+#       class "steam_app_0" with a title  Battle.net games (its tray icon
+#                                         has an empty title)
 #
-#   fullscreen — window entering actual fullscreen that isn't a browser/terminal/media player
-#     Hyprland 0.41+: fullscreen>>WINDOWADDRESS,INTERNALSTATE[,CLIENTSTATE]
-#       state 0=none, 1=maximized, 2=fullscreen
-#     Older: fullscreen>>1 (1=entered, 0=left)
+#   fullscreen>>1 / fullscreen>>0  (entered / left fullscreen)
+#     On 1, after 0.3 s, moves the active window unless its class is in the
+#     is_non_game list (browsers, terminals, media players, image viewers,
+#     the Steam client). The ADDRESS,STATE branch below handles an event
+#     payload with a window address and state (1 maximized, 2 fullscreen).
 #
-# Note on Hyprland 0.55 Lua dispatch:
-#   hyprctl dispatch X Y is wrapped as "return hl.dispatch(X Y)" — invalid Lua syntax
-#   when X or Y contain spaces or commas. All dispatches use the hl.dsp.* Lua form.
+# Windows already on workspace 2 are left alone. Moves use the Lua
+# dispatcher form: in Lua-config mode `hyprctl dispatch ARGS` runs
+# `return hl.dispatch(ARGS)`, so ARGS must be a Lua hl.dsp.* expression.
+# Window details come from `hyprctl clients -j` / `activewindow -j`.
 
 SOCKET="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
 
@@ -106,17 +110,18 @@ handle() {
         local addr state
 
         if [[ "$payload" == *","* ]]; then
-            # 0.41+ format: WINDOWADDRESS,INTERNALSTATE[,CLIENTSTATE]
+            # Payload with an address: ADDRESS,INTERNALSTATE[,CLIENTSTATE]
             addr="${payload%%,*}"
             addr="${addr#0x}"   # normalize — strip 0x if present in event
             local rest="${payload#*,}"
             state="${rest%%,*}"
-            # Act on fullscreen (2) and maximized (1) — some games (e.g. Windowed
-            # Fullscreen display modes) request maximize instead of true fullscreen.
-            # Not restored (0). Still filtered through is_non_game() below.
+            # Act on fullscreen (2) and maximized (1): some games' windowed
+            # fullscreen modes request maximize instead. 0 (none) is ignored.
+            # Still filtered through is_non_game() below.
             [[ "$state" == "2" || "$state" == "1" ]] || return
         else
-            # Older format: 1=entered fullscreen, 0=left
+            # Plain payload: 1 = entered fullscreen, 0 = left; use the
+            # active window's address
             [[ "$payload" == "1" ]] || return
             addr=$(hyprctl activewindow -j 2>/dev/null \
                    | python3 -c "import json,sys; print(json.load(sys.stdin).get('address','').lstrip('0x'))" 2>/dev/null)

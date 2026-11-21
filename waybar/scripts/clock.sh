@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # ===========================================================================
-# waybar/scripts/clock.sh — Custom clock with no leading zero on 12h hour
+# waybar/scripts/clock.sh — waybar custom module: date and 12-hour time
 #
-# Uses shell `date` which supports %-I (strftime), unlike waybar's built-in
-# chrono formatter which only has zero-padded %I.
-#
-# Outputs JSON for waybar (return-type: json).
-# Tooltip shows a full `cal` calendar for the current month.
+# Wired in config.jsonc as custom/clock (return-type "json", interval 1).
+# Prints {"text": "<date>   <time>", "tooltip": "<cal output>"}.
+#   text     "%A, %d %b %Y" and "%-I:%M %p" from date(1); `-` after % drops the
+#            leading zero (GNU date), which waybar's own clock format cannot do
+#   tooltip  this month's `cal` calendar, with < and > escaped for Pango markup
 # ===========================================================================
 
 TIME=$(date +"%-I:%M %p")

@@ -1,19 +1,43 @@
 # ===========================================================================
-# dotfiles/wayle/config.toml — Wayle desktop shell configuration
+# wayle/config.toml — Wayle desktop shell configuration (option names and
+# values follow the schema.json Wayle writes to ~/.config/wayle)
 #
-# Static config. Wayle merges this with runtime.toml (GUI/CLI changes).
-# Values here are the declared baseline; runtime.toml overrides on top.
-#
-# To reset runtime overrides to these values:
+# Static baseline. Wayle merges it with runtime.toml (changes made from the GUI
+# or CLI); runtime.toml wins. To drop the runtime overrides and return to the
+# values here:
 #   rm ~/.config/wayle/runtime.toml && systemctl --user restart wayle
 # ===========================================================================
 
+# ---------------------------------------------------------------------------
+# [general] — shell-wide settings
+#   font-sans     sans-serif family for UI text and labels (default "Inter")
+#   font-mono     monospace family for code and technical text (default
+#                 "JetBrains Mono")
+#   tearing-mode  true demotes overlay surfaces to `top` so fullscreen games can
+#                 use direct scanout (default false)
+# ---------------------------------------------------------------------------
 [general]
 font-sans = "JetBrainsMono Nerd Font Propo"
 font-mono = "JetBrainsMono Nerd Font Mono"
 
 # ---------------------------------------------------------------------------
-# Bar layout — ultrawide 3440x1440
+# [bar] — bar chrome and layout (the settings below sit in the schema's BarConfig)
+#   button-variant   basic, block-prefix (default) or icon-square
+#   button-rounding  none, sm (default), md, lg or full
+#   Not set here: scale, inset-edge, inset-ends, padding, padding-ends,
+#   module-gap, location (top, bottom, left, right), bg, background-opacity,
+#   border-*, rounding, shadow (none, drop, floating), button-*, dropdown-*
+#
+# [[bar.layout]] — one table per monitor
+#   monitor  connector name (e.g. "DP-1") or "*" for every monitor
+#   extends  inherit another layout by its monitor value
+#   show     false hides the bar on that monitor
+#   left, center, right  module lists. Built-in modules: battery, bluetooth,
+#            cava, clock, cpu, dashboard, hyprland-workspaces, hyprsunset,
+#            idle-inhibit, keybind-mode, keyboard-input, media, microphone,
+#            netstat, network, niri-workspaces, notifications, power, ram,
+#            separator, storage, systray, updates, volume, weather,
+#            window-title, world-clock, or custom-<id> for a custom module
 # ---------------------------------------------------------------------------
 [bar]
 button-variant = "basic"
@@ -37,24 +61,50 @@ right = [
 ]
 
 # ---------------------------------------------------------------------------
-# Theming — matugen Material You palette (generated from current wallpaper)
-# Colors written to ~/.cache/wayle/matugen-colors.json by the wallpaper engine.
+# [styling] — theme and palette
+#   theme-provider    wayle (default), matugen, pywal or wallust
+#   matugen-scheme    content, expressive, fidelity, fruit-salad, monochrome,
+#                     neutral, rainbow, tonal-spot (default), vibrant
+#   matugen-contrast  -1.0 to 1.0
+#   matugen-source-color  source colour index 0-3
+#   scale, rounding   scale and corner rounding of dropdowns/popovers/dialogs
+# With "matugen" the palette comes from the current wallpaper; the wallpaper
+# engine writes it to ~/.cache/wayle/matugen-colors.json.
 # ---------------------------------------------------------------------------
 [styling]
 theme-provider = "matugen"
 
 # ---------------------------------------------------------------------------
-# Modules
+# [modules.weather]
+#   provider    open-meteo (default), visual-crossing or weather-api (the last
+#               two need visual-crossing-key / weatherapi-key)
+#   location    city name or "lat,lon"
+#   units       metric (default) or imperial
+#   format      label template ({{ temp }}, {{ temp_unit }}, {{ feels_like }}, ...)
+#   time-format 12h (default) or 24h
+#   refresh-interval-seconds  polling interval (default 1800)
+#   plus label/icon/border colour tokens and click/scroll actions (left-click
+#   defaults to dropdown:weather)
 # ---------------------------------------------------------------------------
 [modules.weather]
 location = "Orlando"
 units = "imperial"
 
 # ---------------------------------------------------------------------------
-# Wallpaper — Wayle's built-in awww engine
-# engine-enabled = true   → Wayle renders wallpapers (replaces standalone awww)
-# cycling-directory       → ~/Pictures/Wallpapers is a symlink to
-#                           the Assets repo, Wallpapers/<wallpaperDir>
+# [wallpaper] — Wayle's built-in awww engine
+#   engine-enabled         true renders wallpapers (replaces a standalone awww);
+#                          false keeps colour extraction but uses another tool
+#   transition-type        none, simple (default), fade, left, right, top, bottom,
+#                          wipe, wave, grow, center, outer, any, random
+#   transition-duration    seconds (default 0.7); transition-fps (default 60)
+#   cycling-enabled        rotate wallpapers automatically
+#   cycling-directory      folder of images; ~/Pictures/Wallpapers is a symlink
+#                          to the Assets repo's Wallpapers/<wallpaperDir>
+#   cycling-mode           sequential (default) or shuffle
+#   cycling-interval-mins  minutes between changes (default 15)
+#   cycling-same-image     same image on every monitor (shuffle mode only)
+#   monitors               per-monitor [[wallpaper.monitors]] name, wallpaper,
+#                          fit-mode
 # ---------------------------------------------------------------------------
 [wallpaper]
 engine-enabled = true

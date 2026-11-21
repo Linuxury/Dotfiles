@@ -1,31 +1,60 @@
-# Default tiling mode and shared sizing behavior. Workspace rules in
-# outputs.toml can override these values for individual workspaces.
-# Included from config.toml. Base structure follows upstream's
-# examples/config.toml (fetched 2026-09-04, see
-# dotfiles/umbriel/upstream-default.toml).
+# Layout — default tiling mode and shared sizing for every workspace.
+# Included from ../config.toml; a [[workspace]] rule (outputs.toml) can
+# override any layout.* key for one workspace. Docs: docs/user/layout.md;
+# option list: `umbriel config schema`.
 
+# [layout] — trailing comments give ranges. Modes (installed version):
+#   scrolling  fixed-size columns in a scrollable strip
+#   dwindle    each new window splits an existing tile
+#   master     primary windows beside a stack
+#   stacking   free, overlapping windows (the trailing "floating" is the
+#              older name; the installed schema accepts stacking)
+#   extent_presets        fractions the width/height cycle actions step
+#                         through, 0.1-4.0 (above 1.0: scrolling only)
+#   new_exits_fullscreen  ([]) arriving window kinds that end a fullscreen
+#                         window: tiled, floating, pinned or all
+#   client_maximize       ("column") an app's own maximize button: column
+#                         (normal layout maximize) or edges (usable area)
+#   [layout.stacking] drop_zones (true) edge previews when dragging
+#   [layout.tabs]  tab groups: default_display normal/tabbed,
+#                  new_tab_position end/after_active, wrap_focus,
+#                  scroll_switches_tabs, middle_click_closes
 [layout]
 mode = "scrolling"                              # scrolling, dwindle, master, or floating
 gap = 8                                         # Logical pixels between tiles, 0-500
 extent_presets = [0.25, 0.5, 0.75, 1.0]       # Width and height cycling fractions
 
 [layout.struts]
-# Signed logical pixels reserved after panel exclusive zones. Negative
-# values expand the tiled area beyond that edge.
+# Signed logical pixels reserved per edge after panel exclusive zones.
+# Negative values expand the tiled area beyond that edge.
 left = 0                                        # -65535 to 65535
 right = 0
 top = 0
 bottom = 0
 
+# [layout.scrolling]
+#   direction is not in the installed schema; the strip axis follows the
+#   output's workspace_axis (vertical default, or horizontal; outputs.toml).
+#   default_extent_fraction    initial extent for new columns, 0.1-4.0
+#                              (above 1.0 spans several viewports)
+#   center_underfull_strip     center a strip narrower than the viewport
+#   center_focused             never, always or on_overflow
+#   center_on_overview_select  (false, not set) center the column picked in
+#                              the overview on close
 [layout.scrolling]
 # direction = "horizontal"                      # horizontal or vertical strip axis
 default_extent_fraction = 0.5                   # Base width for new/companion columns, 0.1-1.0
 center_underfull_strip = true                   # Center a strip narrower than the viewport
 center_focused = "never"                        # "never", "always", or "on_overflow"
 
+# [layout.dwindle] — preserve_split keeps each split direction fixed;
+# new_toward_cursor (false) places a new window on the half of the focused
+# tile nearer the pointer.
 [layout.dwindle]
 # preserve_split = false                        # Keep every split direction fixed after creation
 
+# [layout.master] — position left, right or center (installed schema);
+# new_becomes_master (false, not set) gives each new window the master slot.
 [layout.master]
 position = "left"                               # left or right master area
 default_width_fraction = 0.55                   # Initial master area fraction, 0.1-0.9

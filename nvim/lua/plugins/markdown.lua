@@ -1,7 +1,7 @@
 return {
-  -- In-buffer markdown rendering (headings, code blocks, checkboxes, tables)
-  -- Disabled: crashes on nvim 0.12.3 — treesitter node:range() returns nil
-  -- Re-enable after render-markdown or nvim-treesitter ships a compatibility fix
+  -- render-markdown.nvim — in-buffer rendering of headings, code blocks, bullets,
+  -- checkboxes and tables (each enabled below). enabled = false keeps the
+  -- plugin out of lazy.nvim; set it to true (or remove the line) to use it.
   {
     "MeanderingProgrammer/render-markdown.nvim",
     enabled = false,
@@ -19,7 +19,8 @@ return {
     },
   },
 
-  -- Live browser preview
+  -- markdown-preview.nvim — live preview in a browser (:MarkdownPreview,
+  -- :MarkdownPreviewToggle, :MarkdownPreviewStop)
   {
     "iamcco/markdown-preview.nvim",
     cmd  = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
@@ -33,7 +34,7 @@ return {
     end,
   },
 
-  -- Markdown editing helpers (checkbox toggle, table formatting)
+  -- markdown.nvim — editing helpers: checkbox toggle, table formatting
   {
     "tadmccorkle/markdown.nvim",
     ft   = "markdown",

@@ -1,5 +1,9 @@
 return {
-  -- mini.nvim modules — lightweight, no external dependencies
+  -- mini.nvim modules, each loaded on VeryLazy with default options (opts = {}):
+  --   ai (extra a/i text objects), comment (gc), surround (sa/sd/sr),
+  --   pairs (auto-close brackets), move (Alt-hjkl moves lines/selections),
+  --   cursorword (underline other uses of the word), trailspace (highlight
+  --   trailing whitespace)
   { "echasnovski/mini.ai",        version = false, event = "VeryLazy", opts = {} },
   { "echasnovski/mini.comment",   version = false, event = "VeryLazy", opts = {} },
   { "echasnovski/mini.surround",  version = false, event = "VeryLazy", opts = {} },
@@ -8,7 +12,8 @@ return {
   { "echasnovski/mini.cursorword",version = false, event = "VeryLazy", opts = {} },
   { "echasnovski/mini.trailspace",version = false, event = "VeryLazy", opts = {} },
 
-  -- Icons (mock nvim-web-devicons so other plugins pick them up automatically)
+  -- mini.icons, registered as a stand-in for nvim-web-devicons: plugins that
+  -- require("nvim-web-devicons") get the mini.icons mock. Loaded lazily.
   {
     "nvim-mini/mini.icons",
     lazy = true,
@@ -21,7 +26,12 @@ return {
     end,
   },
 
-  -- Git gutter indicators + hunk navigation
+  -- gitsigns.nvim — git change markers in the sign column (signs.* set one
+  -- glyph per state: add, change, delete, topdelete, changedelete, untracked)
+  -- and buffer-local hunk maps from on_attach:
+  --   ]h / [h next/prev hunk    <leader>ghs/ghr stage/reset hunk
+  --   <leader>ghS/ghR stage/reset buffer    ghu undo stage    ghp preview inline
+  --   ghb blame line    ghd diff this
   {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },

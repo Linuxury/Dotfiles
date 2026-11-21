@@ -1,16 +1,27 @@
 #!/usr/bin/env bash
 # ===========================================================================
-# scripts/powermenu.sh — Power / session menu via wofi
+# scripts/powermenu.sh — power / session menu in wofi
 #
-# Options:
-#   󰤄  Lock       — noctalia msg session lock
-#   󰍃  Logout     — exit Hyprland (back to greetd)
-#   󰒲  Suspend    — systemctl suspend
-#   󰜉  Reboot     — systemctl reboot
-#   󰐥  Shutdown   — systemctl poweroff
+# Bound to SUPER+SHIFT+E in modules/keybinds.lua. Each entry runs a Noctalia
+# session action (`noctalia msg session <action>`):
+#   Lock      lock     lock the screen
+#   Logout    logout   end the session, back to the login screen
+#   Suspend   suspend
+#   Reboot    reboot
+#   Shutdown  shutdown
 #
-# Triggered by SUPER+SHIFT+E (replaces bare `exit` binding).
-# Uses shared style.css — same theme as app launcher, dmenu, clipboard.
+# wofi flags used:
+#   --dmenu          read entries from stdin, print the chosen one
+#   --normal-window  normal window instead of a layer-shell surface, so
+#                    window rules apply
+#   --class          window class; windowrules.lua floats, centers and
+#                    rounds class "powermenu"
+#   --width          window width in px
+#   --location       center (default); see wofi(7) for the others
+#   --style          stylesheet; ~/.config/wofi/powermenu-style.css
+#   --no-actions     no sub-actions per entry
+#   --insensitive    case-insensitive search
+# Other wofi flags: --prompt, --lines, --conf, --matching, --allow-images
 # ===========================================================================
 
 LOCK="󰤄  Lock"

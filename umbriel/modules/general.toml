@@ -1,16 +1,38 @@
-# General settings — autostart, etc.
-# Included from config.toml. See docs/user/configuration.md's [include]
-# section — later files override earlier ones, main file wins over all.
-# Base structure follows upstream's examples/config.toml (fetched
-# 2026-09-04, see dotfiles/umbriel/upstream-default.toml).
+# General session settings — startup commands, Xwayland, modifier key,
+# session environment and lid events. Included from ../config.toml; values in
+# config.toml win over this file. Docs: docs/user/configuration.md
+# (#general, #environment, #events); option list: `umbriel config schema`.
 
+# [general] — session behaviour. Keys (default):
+#   autostart                   ([]) commands started once with the session;
+#                               restart to apply
+#   mod_key                     (Super, Alt when nested) modifier `Mod` means
+#                               in keybinds: Super, Alt, Ctrl or Shift
+#   xwayland                    (true) start Xwayland lazily for X11 apps;
+#                               Xwayland must be on PATH; restart to apply
+#   xwayland_native_resolution  (false) X11 apps see outputs at physical size,
+#                               sharp on scaled outputs but small UI; restart
+#   xwayland_xsettings          (true) announce scale and cursor theme over
+#                               XSETTINGS; false to run your own (xsettingsd)
+#   xwayland_primary_output     ("") connector or monitor name to publish as
+#                               the X11 primary; "" leaves it unmanaged
+#   nvidia_sync_workaround      (true) wait for GPU completion on NVIDIA
+#                               outputs without explicit sync; false if it
+#                               stutters (flicker may return)
+#   show_cheatsheet             (true) show the keybind cheatsheet at startup
+#   focus_on_activate           (false) let app activation requests take focus
+#   attach_modal_dialogs        (true) modal dialogs follow their parent
+#   honor_restored_maximize     (false) honor maximize requests an app makes
+#                               while its window opens
+#   Not set here: [drm] ignored_devices / ignored_pci_addresses (leave a GPU
+#   unopened) and [screencast] disable_dynamic_confirmation.
 [general]
-# noctalia is NOT autostarted here — programs.noctalia.systemd.enable already
-# launches it via graphical-session.target. Autostarting it here too races
-# both launches for the same Wayland lock; the loser exits with "noctalia is
-# already running" and systemd crash-loops it into start-limit-hit.
-# hypridle is not started either: Noctalia runs the idle timers and owns
-# org.freedesktop.ScreenSaver, so app inhibits (video, games) reach it.
+# Noctalia is not autostarted here: programs.noctalia.systemd.enable already
+# starts it from graphical-session.target, and a second launch would fight for
+# the same Wayland lock ("noctalia is already running") and push the systemd
+# unit into start-limit-hit. hypridle is not started either: Noctalia runs the
+# idle timers and owns org.freedesktop.ScreenSaver, so app inhibits (video,
+# games) reach it.
 autostart = []
 # mod_key = "Super"                    # Force Super instead of nested-session Alt
 xwayland = true                        # Native wlroots Xwayland (no satellite since 2026-09-29); restart to change
@@ -18,20 +40,21 @@ show_cheatsheet = false                 # Show the keybind overlay on startup
 focus_on_activate = false              # Do not let unsolicited requests steal focus
 honor_restored_maximize = false        # Honor restored maximized state
 
-# Session environment
-# Values apply only at session startup. Native sessions also publish them to
-# newly started systemd user services. Add or uncomment values as needed.
-# Documentation: https://docs.noctalia.dev/umbriel/configuration/#environment
-
+# [environment] — NAME = "value" pairs for Umbriel and every command it starts;
+# a managed native session also publishes them to the systemd user manager
+# (so Noctalia sees them). Names match [A-Za-z_][A-Za-z0-9_]*, values are
+# strings; WAYLAND_DISPLAY, WAYLAND_SOCKET, DISPLAY, UMBRIEL_SOCKET,
+# LIBEI_SOCKET and XDG_CURRENT_DESKTOP/SESSION_DESKTOP/SESSION_TYPE are
+# reserved. Restart to apply; removing a key does not clear the systemd copy
+# (`systemctl --user unset-environment NAME`).
 [environment]
 # GTK_THEME = "Adwaita:dark"
 # QT_QPA_PLATFORMTHEME = "qt5ct"
 
-# Hardware events
-# These commands run when a laptop lid opens or closes. Uncomment either hook
-# to enable it.
-# Documentation: https://docs.noctalia.dev/umbriel/configuration/#events
-
+# [events] — commands run for the lid state once at startup, then on each
+# change (all lid switches closed = closed).
+#   lid_close   e.g. "umbriel msg output-disable eDP-1" to drop the panel
+#   lid_open    e.g. "umbriel msg output-enable eDP-1"
 [events]
 # lid_close = "notify-send 'The laptop lid is closed'"
 # lid_open = "notify-send 'The laptop lid is open'"

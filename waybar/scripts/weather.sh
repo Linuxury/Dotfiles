@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 # ===========================================================================
-# waybar/scripts/weather.sh — Current weather via Open-Meteo + IP geolocation
+# waybar/scripts/weather.sh — waybar custom module: current weather
 #
-# Open-Meteo is free, no API key needed, and uses WMO weather codes.
-# Location is auto-detected from IP via ipinfo.io (lat/lon).
-# Returns JSON with text (bar) and tooltip (hover).
-# Waybar calls this every 30 minutes (interval: 1800).
+# 1. Location: lat/lon and city/region from ipinfo.io (a JSON reply with "loc",
+#    "city", "region").
+# 2. Weather: Open-Meteo forecast API, current=temperature_2m,weather_code,
+#    temperature_unit=fahrenheit, timezone=auto (no API key).
+# 3. weather_code is a WMO code, mapped to an emoji + description by wmo_icon.
+# Output (return-type "json"): {"text": "<icon> <temp>°F", "tooltip": ..., "class":
+# "ok"|"offline"|"error"}. Wired in config.jsonc as custom/weather, interval 1800
+# (30 min); its exec-if probes ipinfo.io first.
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-# WMO weather code → icon + description
+# WMO weather code (as returned by Open-Meteo) -> emoji + description
 # ---------------------------------------------------------------------------
 wmo_icon() {
     case $1 in
@@ -33,7 +37,7 @@ wmo_icon() {
 }
 
 # ---------------------------------------------------------------------------
-# Get lat/lon from IP
+# Location from the public IP (3 s timeout; "offline" if the request fails)
 # ---------------------------------------------------------------------------
 LOC=$(curl -sf --max-time 3 "ipinfo.io" 2>/dev/null)
 if [ -z "$LOC" ]; then
@@ -52,7 +56,7 @@ if [ -z "$LAT" ] || [ -z "$LON" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Query Open-Meteo
+# Query Open-Meteo (5 s timeout)
 # ---------------------------------------------------------------------------
 DATA=$(curl -sf --max-time 5 \
     "https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto" \

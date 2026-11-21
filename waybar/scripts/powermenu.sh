@@ -1,9 +1,18 @@
 #!/usr/bin/env bash
 # ===========================================================================
-# waybar/scripts/powermenu.sh — Power menu via wofi
+# waybar/scripts/powermenu.sh — power menu in a wofi dmenu
 #
-# Shows a small wofi dmenu with four actions.
-# Bound to the custom/power button in waybar.
+# Lists Lock, Log Out, Restart, Shut Down, then runs the chosen action. The
+# custom/power button in config.jsonc runs ~/.config/hypr/scripts/powermenu.sh
+# (hypr/scripts/), not this copy. Actions:
+#   Lock       hyprlock
+#   Log Out    uwsm stop (ends the uwsm-managed session)
+#   Restart    systemctl reboot
+#   Shut Down  systemctl poweroff
+# wofi flags: --dmenu (read choices from stdin), --normal-window (ordinary window,
+# not layer-shell), --class (window class name, for window rules), --width 220 (px),
+# --no-actions (no multi-action entries), --insensitive (case-insensitive search),
+# --style (CSS file: ~/.config/wofi/powermenu-style.css).
 # ===========================================================================
 
 LOCK="  Lock"

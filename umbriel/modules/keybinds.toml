@@ -1,13 +1,30 @@
-# Keybinds. Included from config.toml.
-# Base structure follows upstream's examples/config.toml verbatim (fetched
-# 2026-09-04, see dotfiles/umbriel/upstream-default.toml) — custom additions
-# are called out in their own sections below the upstream block.
-# Configured chords replace matching built-ins; built-in chords not
-# mentioned here remain active. Syntax: docs.noctalia.dev/umbriel/keybinds
-# Actions: docs.noctalia.dev/umbriel/actions
+# Keybinds and named scratchpads. Included from ../config.toml.
+# Docs: docs/user/keybinds.md (syntax), docs/user/actions.md (every action),
+# docs/user/scratchpad.md. Configured chords replace matching built-ins;
+# built-in chords not mentioned here stay active.
+#
+# Bind forms under [keybinds]:
+#   "Chord" = "action args"               plain form; args are words
+#   "Chord" = { action = "...", ... }     table form, keys (default):
+#     repeat               (true) repeat while held; false for launchers
+#     allow_when_locked    (false) also fire on the lock screen
+#     allow_when_inhibited (false) fire while a game/remote desktop inhibits
+#                          shortcuts
+#     cooldown_ms          (0) suppress repeats for this long, 0-3600000
+#     release              action run when the chord is released
+#     submap               layer transition after the action ("reset")
+# Modifiers: Mod (general.mod_key), Shift, Ctrl/Control, Alt,
+# Super/Logo/Win. Keys are XKB names (XF86AudioMute, Page_Up), plus mouse
+# buttons (MouseMiddle) and wheel (WheelUp). A matched bind consumes its
+# press and release.
 
-# Named scratchpads (tables must precede/outside [keybinds]). Defining any
-# removes the implicit `default`, so every scratchpad action carries a name.
+# [[scratchpad]] — named per-output scratchpads; these tables must sit
+# outside [keybinds]. Defining any removes the implicit `default` pad, so
+# every scratchpad action names one. Keys:
+#   name               unique; "default" is reserved
+#   spawn_when_empty   ("") shell command run when toggling an empty pad open
+#   hide_when_empty    (false) hide the pad when its last window goes
+#   proportional_size  (false) keep window size as a fraction of usable area
 # `misc` backs the generic Space/Tab binds; the others launch their app when
 # toggled empty.
 [[scratchpad]]
@@ -27,7 +44,7 @@ spawn_when_empty = "thunar"
 
 [keybinds]
 
-# ─────────────────────── Upstream defaults (unmodified) ────────────────────
+# ─────────────────── Binds from upstream's packaged example ─────────────────
 
 # Applications and session
 "Mod+Return" = { action = "spawn kitty", repeat = false }
@@ -59,16 +76,21 @@ spawn_when_empty = "thunar"
 "Mod+F" = { action = "window-toggle-fullscreen", repeat = false }
 "Mod+Ctrl+F" = { action = "window-toggle-maximize", repeat = false }
 
-# These are built in already, but explicitly declared anyway — pure
-# built-ins with no declaration here don't reliably fire on this Umbriel
-# version. See ~/.agents/memory/feedback_umbriel_builtin_keybinds_bug.md.
+# Built-in focus chords, listed for reference and left commented. Known
+# issue: built-ins without a declaration here may not fire reliably
+# (~/.agents/memory/feedback_umbriel_builtin_keybinds_bug.md); uncomment one
+# to declare it. Mod+L is taken by the lock bind further down.
 # "Mod+F1" = "window-focus-next"
 # "Mod+H" = "window-focus-left"
 # "Mod+J" = "window-focus-down"
 # "Mod+K" = "window-focus-up"
 
-# Width/height cycling and resizing
-# Redundant with Mod+Comma/Period below (same actions)
+# Width/height cycling and resizing. The primary extent is a column's width
+# in a horizontal strip (height in a vertical one); presets come from
+# layout.extent_presets. Upstream's example binds Mod+Comma/Period to
+# consume left/right instead. The commented window-*-width/height lines use action names the
+# installed actions.md no longer lists (now *-primary-extent /
+# *-secondary-extent) and would fail validation if uncommented.
 # "Mod+R" = "window-cycle-width"
 # "Mod+Shift+R" = "window-cycle-width-back"
 "Mod+Comma" = "window-cycle-primary-extent-back"
@@ -95,9 +117,10 @@ spawn_when_empty = "thunar"
 # "Mod+Shift+C" = "window-center"
 "Mod+Ctrl+T" = { action = "workspace-set-layout toggle", repeat = false }
 
-# Tabs — Mod+Shift+W tabs the windows stacked in the focused column (or stacks
-# them back). Mod+Shift+Up/Down above moves a window into/out of a group;
-# click, scroll, or drag a title on the tab bar to switch or reorder.
+# Tabs — Mod+Shift+W turns the windows stacked in the focused column into a
+# tab group (or stacks them back). Mod+Shift+Up/Down above moves a window
+# into or out of a group; click, scroll or drag a title on the tab bar to
+# switch or reorder. Bar look: [appearance.tab_bar]; behaviour: [layout.tabs].
 "Mod+Shift+W" = { action = "column-toggle-tabbed", repeat = false }
 "Mod+Alt+Right" = "column-focus-tab-next"
 "Mod+Alt+Left" = "column-focus-tab-previous"
@@ -108,9 +131,8 @@ spawn_when_empty = "thunar"
 # "Mod+WheelDown" = "window-focus-right"
 # "Mod+Alt+K" = "keyboard-layout-next"
 
-# Workspaces — Mod+1 through Mod+9 switch, Shift moves the focused window.
-# Upstream's example only describes these in prose, no TOML lines to
-# reference.
+# Workspaces — Mod+1 through Mod+9 switch, Shift moves the focused window
+# there; Page_Up/Page_Down step through the inventory.
 "Mod+1" = "workspace-switch 1"
 "Mod+2" = "workspace-switch 2"
 "Mod+3" = "workspace-switch 3"
@@ -134,7 +156,8 @@ spawn_when_empty = "thunar"
 "Mod+Shift+Page_Up" = "window-move-to-workspace-previous"
 "Mod+Shift+Page_Down" = "window-move-to-workspace-next"
 
-# Scratchpads — pads defined above [keybinds]. Rule: Mod+Ctrl = scratchpad.
+# Scratchpads — pads defined above [keybinds]. Convention: Mod+Ctrl =
+# scratchpad. Scratchpad toggles and cycling never repeat.
 "Mod+Shift+Space" = { action = "window-move-to-scratchpad misc", repeat = false }
 "Mod+Space" = "scratchpad-toggle misc"
 "Mod+Ctrl+Space" = { action = "window-restore-from-scratchpad misc", repeat = false }
@@ -149,6 +172,9 @@ spawn_when_empty = "thunar"
 # Submaps temporarily replace the active keybind layer and can nest. Entry
 # binds must not repeat. A table-form bind can run an action and then reset one
 # level, while a global reset provides an emergency exit from any layer.
+# The installed syntax is "submap <name>" / "submap reset" (words, no colon);
+# the example below still uses the colon form and older width actions, so
+# translate it before uncommenting. `umbriel submap` prints the active layer.
 # "Mod+S" = { action = "submap:resize", repeat = false }
 # "submap[resize],1" = { action = "window-set-width 0.5", submap = "reset" }
 # "submap[resize],N" = { action = "submap:nudge", repeat = false }
@@ -159,8 +185,9 @@ spawn_when_empty = "thunar"
 # "Escape" = "submap:reset"
 
 # ───────────────────────── Custom additions ─────────────────────────────────
-# Everything below is ours, not part of the upstream default. None of it
-# overrides a built-in or an upstream-active chord above.
+# Binds not in upstream's packaged example. Some reuse chords that example
+# binds differently: Mod+L (focus right), Mod+Escape (quit prompt) and Mod+W
+# (toggle tabs).
 
 # Core apps
 "Mod+Shift+Return" = { action = "spawn kitty --class floating-term", repeat = false }
@@ -205,7 +232,7 @@ XF86AudioPlay        = "spawn playerctl play-pause"
 XF86AudioNext        = "spawn playerctl next"
 XF86AudioPrev        = "spawn playerctl previous"
 
-# Brightness (allow_when_locked = works on the lock screen)
+# Brightness (allow_when_locked = also works on the lock screen)
 XF86MonBrightnessUp   = { action = "spawn brightnessctl set +5%", allow_when_locked = true }
 XF86MonBrightnessDown = { action = "spawn brightnessctl set 5%-", allow_when_locked = true }
 
