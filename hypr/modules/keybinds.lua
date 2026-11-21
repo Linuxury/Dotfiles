@@ -181,7 +181,7 @@ hl.bind(mod .. " + CTRL + N",  hl.dsp.exec_cmd("systemctl --user restart noctali
 -- Switch to workspace 2 and back to release a pointer lock a fullscreen game
 -- did not let go of
 hl.bind(mod .. " + CTRL + G", hl.dsp.exec_cmd(
-    "hyprctl dispatch workspace 2 && sleep 0.15 && hyprctl dispatch workspace previous"
+    "hyprctl dispatch 'hl.dsp.focus({ workspace = \"2\" })' && sleep 0.15 && hyprctl dispatch 'hl.dsp.focus({ workspace = \"previous\" })'"
 ))
 -- steam-bpm: Steam Big Picture in gamescope; the gamescope window rule in
 -- windowrules.lua sends it to workspace 2

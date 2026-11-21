@@ -42,7 +42,7 @@ hl.window_rule({ match = { class = "gamescope"         }, workspace = "2 silent"
 hl.window_rule({ match = { class = "lutris"            }, workspace = "2 silent" })
 hl.window_rule({ match = { class = "heroic"            }, workspace = "2 silent" })
 hl.window_rule({ match = { class = "minecraft-launcher"}, workspace = "2 silent" })
-hl.window_rule({ match = { class = "^Minecraft"        }, workspace = "2 silent" })
+hl.window_rule({ match = { class = "Minecraft.*"       }, workspace = "2 silent" })
 hl.window_rule({ match = { class = "HytaleClient"      }, workspace = "2 silent" })
 
 -- Fullscreen apps → workspace 2. Rules are checked when a window opens, so

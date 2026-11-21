@@ -11,8 +11,8 @@ case "$HOSTNAME" in
     Ryzen5900x)
         # OLED display: kitty at 0.9 focused / 0.8 unfocused opacity and no
         # blur behind it, so text stays readable on bright wallpapers
-        hyprctl keyword windowrule "match:class kitty, opacity 0.9 override 0.8 override"
-        hyprctl keyword windowrule "match:class kitty, no_blur on"
+        hyprctl eval 'hl.window_rule({ match = { class = "kitty" }, opacity = "0.9 override 0.8 override" })'
+        hyprctl eval 'hl.window_rule({ match = { class = "kitty" }, no_blur = true })'
         ;;
     # ThinkPad: uses the shared kitty rule in windowrules.lua (0.75 / 0.6)
 esac

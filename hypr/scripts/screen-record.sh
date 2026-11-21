@@ -28,7 +28,7 @@ if [ -f "$PID_FILE" ]; then
     if kill -0 "$PID" 2>/dev/null; then
         kill -INT "$PID"
         rm -f "$PID_FILE"
-        notify-send -t 3000 "  Recording Saved" "$(ls -t "$RECORD_DIR"/recording-*.mp4 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo 'recording.mp4')"
+        notify-send -t 3000 "  Recording Saved" "$(f=$(ls -t "$RECORD_DIR"/recording-*.mp4 2>/dev/null | head -1); basename "${f:-recording.mp4}")"
         exit 0
     fi
     rm -f "$PID_FILE"

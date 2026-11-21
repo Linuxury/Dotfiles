@@ -90,7 +90,7 @@ for w in data:
         break
 " 2>/dev/null)
     [[ "$ws" == "2" ]] && return
-    hyprctl dispatch "hl.dsp.window.move({workspace=2,silent=true,window='address:0x$addr'})" 2>/dev/null
+    hyprctl dispatch "hl.dsp.window.move({workspace=2,follow=false,window='address:0x$addr'})" 2>/dev/null
 }
 
 handle() {

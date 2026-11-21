@@ -8,5 +8,5 @@
 
 DEVICE=$(brightnessctl -l 2>/dev/null | grep -m1 "backlight")
 if [ -n "$DEVICE" ]; then
-    brightnessctl -s set 30
+    brightnessctl -s set 30%
 fi
