@@ -8,11 +8,11 @@ secrets are in here, only configuration. The NixOS config that uses it is
 
 | Folder | What it holds | How my NixOS config uses it |
 | --- | --- | --- |
-| `hypr/` | Hyprland (Lua) config, scripts, hypridle profiles, matugen templates | live link `~/.config/hypr` |
+| `hypr/` (not active) | Hyprland (Lua) config, scripts, hypridle profiles, matugen templates | live link `~/.config/hypr` |
 | `umbriel/` | Umbriel compositor config | live link `~/.config/umbriel` |
-| `waybar/`, `wofi/`, `rofi/` | bar and launchers | live links into `~/.config/` |
-| `swaync/` | notification centre style and colours | live links |
-| `wayle/` | Wayle shell config | live link |
+| `waybar/`, `wofi/`, `rofi/` (not active) | bar and launchers | live links into `~/.config/` |
+| `swaync/` (not active) | notification centre style and colours | live links |
+| `wayle/` (not active) | Wayle shell config | live link |
 | `nvim/` | Neovim config | live link `~/.config/nvim` |
 | `kitty/` | terminal config and Hyprland overrides | pinned input; copied once for linuxury so the colour tool can edit it |
 | `vscodium/` | VSCodium base settings | merged into the real settings file at rebuild |
@@ -21,6 +21,10 @@ secrets are in here, only configuration. The NixOS config that uses it is
 | `firefox/` | browser policies and `userChrome.css` | policies: pinned input; `userChrome.css`: live link |
 | `chromium/` | browser policies | pinned input |
 | `opencode/`, `MangoHud/`, `nano/`, `topgrade/` | small app configs | pinned input |
+
+"Not active": no host in the NixOS config runs Hyprland or the Wayle shell today (the
+Umbriel desktop uses the Noctalia shell, the others run KDE Plasma or COSMIC). These
+folders are kept so that setup can be switched back on; they may need fixes first.
 
 "Live link" means the app reads straight from a clone of this repo, so an edit takes effect
 without a rebuild (for example `hyprctl reload`). "Pinned input" means the config is built
