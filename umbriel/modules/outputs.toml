@@ -33,8 +33,8 @@
 # connector (DP-3) so the section follows the monitor across ports; an
 # identity section wins over a connector section. VRR is fullscreen-only.
 # direct_scanout is off: leaving a fullscreen game swaps the scanout plane
-# mid-flip, which freezes on "Atomic commit failed: busy". HDR is off; "auto"
-# would switch to HDR only for fullscreen content carrying HDR metadata.
+# mid-flip, which freezes on "Atomic commit failed: busy". HDR is "auto":
+# switches to HDR only for fullscreen content carrying HDR metadata.
 # Native Wayland Proton builds may need PROTON_ENABLE_WAYLAND=1 and
 # DXVK_HDR=1 before a game publishes HDR metadata (outputs.md, HDR).
 # sdr_white, bit_depth and color settings stay at their defaults.
@@ -44,7 +44,7 @@ mode = "3440x1440@240"                        # WIDTHxHEIGHT or WIDTHxHEIGHT@HZ
 scale = 1.0                                   # Logical size is mode size divided by scale
 vrr = "fullscreen"                                # disabled, always, or fullscreen
 direct_scanout = false                        # False forces composition on this output
-hdr = "off"                                 # off, on, auto, or fullscreen
+hdr = "auto"                                # off, on, auto, or fullscreen
 
 # Upstream's generic example of the per-output keys, kept commented.
 
