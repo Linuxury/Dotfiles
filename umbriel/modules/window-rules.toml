@@ -65,7 +65,7 @@ default_workspace = 3
 [[window_rule]]
 match.app_id = "^steam$"
 match.title = "^Steam$"
-default_position = { x = 700, y = 98, anchor = "top_left" }
+default_position = { x = 0, y = 0, anchor = "center" }
 default_floating_size_px = { width = 2114, height = 1236 }
 
 [[window_rule]]
