@@ -45,10 +45,12 @@
       }
     },
     "UserMessaging": {
-      "WhatsNew": false,
       "ExtensionRecommendations": false,
+      "FeatureRecommendations": false,
       "UrlbarInterventions": false,
-      "SkipOnboarding": true
+      "SkipOnboarding": true,
+      "MoreFromMozilla": false,
+      "Locked": false
     },
     "OverridePostUpdatePage": "",
     "OverrideFirstRunPage": "",
@@ -89,6 +91,13 @@
           "Alias": "ddg",
           "Description": "DuckDuckGo",
           "SuggestURLTemplate": "https://duckduckgo.com/ac/?q={searchTerms}&type=list"
+        },
+        {
+          "Name": "Brave Search",
+          "URLTemplate": "https://search.brave.com/search?q={searchTerms}",
+          "Method": "GET",
+          "IconURL": "https://search.brave.com/favicon.ico",
+          "Alias": "brave"
         }
       ],
       "Default": "ddg"
@@ -105,7 +114,11 @@
     "AIControls": {
       "Default": {
         "Value": "blocked",
-        "Locked": true
+        "Locked": false
+      },
+      "Translations": {
+        "Value": "available",
+        "Locked": false
       }
     },
     "ExtensionUpdate": true,
@@ -118,33 +131,9 @@
         "Value": false,
         "Status": "default"
       },
-      "browser.urlbar.suggest.quicksuggest.nonsponsored": {
-        "Value": false,
-        "Status": "locked"
-      },
-      "browser.urlbar.suggest.quicksuggest.sponsored": {
-        "Value": false,
-        "Status": "locked"
-      },
-      "browser.urlbar.suggest.quicksuggest.all": {
-        "Value": false,
-        "Status": "locked"
-      },
       "browser.toolbars.bookmarks.visibility": {
         "Value": "always",
         "Status": "default"
-      },
-      "browser.safebrowsing.malware.enabled": {
-        "Value": false,
-        "Status": "locked"
-      },
-      "browser.safebrowsing.phishing.enabled": {
-        "Value": false,
-        "Status": "locked"
-      },
-      "browser.safebrowsing.downloads.enabled": {
-        "Value": false,
-        "Status": "locked"
       },
       "browser.newtabpage.activity-stream.feeds.section.topstories": {
         "Value": false,
@@ -177,7 +166,23 @@
       "toolkit.legacyUserProfileCustomizations.stylesheets": {
         "Value": true,
         "Status": "default"
+      },
+      "dom.private-attribution.submission.enabled": {
+        "Value": false,
+        "Status": "default"
+      },
+      "browser.urlbar.trending.featureGate": {
+        "Value": false,
+        "Status": "default"
       }
-    }
+    },
+    "FirefoxSuggest": {
+      "WebSuggestions": false,
+      "SponsoredSuggestions": false,
+      "ImproveSuggest": false,
+      "Locked": false
+    },
+    "AutofillAddressEnabled": false,
+    "AutofillCreditCardEnabled": false
   }
 }
