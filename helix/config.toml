@@ -9,6 +9,7 @@ cursorline = true          # highlights the line the cursor is on
 bufferline = "multiple"    # tab bar when more than one file is open
 color-modes = true         # colours the NOR/INS/SEL label by mode
 auto-pairs = true          # closes (, [, {, " and ' as you type them
+gutters = ["diagnostics", "spacer", "line-numbers", "spacer", "diff"]
 
 [editor.cursor-shape]
 normal = "block"
