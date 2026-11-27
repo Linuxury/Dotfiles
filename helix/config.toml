@@ -1,27 +1,45 @@
 # Helix — linked to ~/.config/helix/config.toml by nixos-config
 # modules/development/editors/helix.nix. themes/noctalia.toml is written by
 # Noctalia, not tracked here.
-theme = "noctalia"
+# Options below are from the Helix 25.07.1 docs (book/src/editor.md).
+# Try a change for one session with :set (e.g. :set whitespace.render all),
+# apply edits to this file with :config-reload.
+
+theme = "noctalia"         # any theme name; list them with :theme <Tab>
 
 [editor]
-line-number = "relative"
-cursorline = true          # highlights the line the cursor is on
-bufferline = "multiple"    # tab bar when more than one file is open
-color-modes = true         # colours the NOR/INS/SEL label by mode
-auto-pairs = true          # closes (, [, {, " and ' as you type them
-gutters = ["diagnostics", "spacer", "line-numbers", "spacer", "diff"]
+line-number = "relative"   # "absolute" (default) | "relative" (absolute when unfocused or in insert mode)
+cursorline = true          # highlights the line the cursor is on (default false)
+bufferline = "multiple"    # tab bar: "never" (default) | "always" | "multiple" (only with 2+ files open)
+color-modes = true         # colours the NOR/INS/SEL label by mode (default false)
+auto-pairs = true          # closes ( [ { ' " ` as you type them; false to disable, or a custom [editor.auto-pairs] table
+gutters = ["diagnostics", "spacer", "line-numbers", "spacer", "diff"]  # default; drop an entry to hide that column
 
-[editor.cursor-shape]
+[editor.cursor-shape]      # each: "block" (default) | "bar" | "underline" | "hidden"
 normal = "block"
 insert = "bar"
 select = "underline"
 
 [editor.soft-wrap]
-enable = true
-wrap-indicator = "↪ "
+enable = true              # default false
+wrap-indicator = "↪ "      # default "↪ "; "" hides it
+# max-wrap = 20            # max free space left at line end; raise to reduce mid-word wraps
+# max-indent-retain = 40   # max indentation carried onto wrapped lines
+# wrap-at-text-width = false  # true wraps at text-width instead of the window edge
 
 [editor.indent-guides]
-render = true
+render = true              # default false
+# character = "│"          # default; others that work: "╎" "▏" "┆" "┊"
+# skip-levels = 0          # hide the first N indent levels
 
 [editor.whitespace]
-render = "all"
+# render: "none" (default), "all", or a table that sets each kind to "all" or "none":
+render = { space = "all", tab = "all", nbsp = "all", nnbsp = "all", newline = "none" }
+
+[editor.whitespace.characters]  # symbols; defaults shown. To hide a kind, set it to "none" in render above
+space = "·"
+nbsp = "⍽"
+nnbsp = "␣"
+tab = "→"
+newline = "⏎"
+tabpad = "·"             # fills the rest of a tab's width
