@@ -13,3 +13,6 @@ color-modes = true         # colours the NOR/INS/SEL label by mode
 normal = "block"
 insert = "bar"
 select = "underline"
+
+[editor.soft-wrap]
+enable = true
