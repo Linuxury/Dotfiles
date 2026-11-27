@@ -43,3 +43,21 @@ nnbsp = "␣"
 tab = "→"
 newline = "⏎"
 tabpad = "·"             # fills the rest of a tab's width
+
+# Key remapping (Helix 25.07.1 book/src/remapping.md). One section per mode:
+# keys.normal, keys.insert, keys.select. Keys: C- = Ctrl, A- = Alt, S- = Shift,
+# e.g. "C-S-esc". Values: a command (move_line_up), a typable command (":w"),
+# a list run in order (["open_below", "normal_mode"]), or a macro ("@miw").
+# Nested tables make key sequences: g = { a = "code_action" } binds "ga".
+# Command names: the Keymap and Commands pages at docs.helix-editor.com.
+[keys.normal]
+# C-s = ":w"                          # Ctrl-s saves (default: save position to jumplist)
+# ret = ["open_below", "normal_mode"] # Enter adds an empty line below
+# g = { a = "code_action" }           # ga shows code actions (default: Space a)
+
+[keys.insert]
+# j = { k = "normal_mode" }           # typing jk leaves insert mode
+# C-s = ":w"                          # Ctrl-s saves while typing
+
+[keys.select]
+# (same format; select mode is entered with v)
