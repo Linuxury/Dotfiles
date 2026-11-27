@@ -5,3 +5,6 @@ theme = "noctalia"
 
 [editor]
 line-number = "relative"
+cursorline = true          # highlights the line the cursor is on
+bufferline = "multiple"    # tab bar when more than one file is open
+color-modes = true         # colours the NOR/INS/SEL label by mode
