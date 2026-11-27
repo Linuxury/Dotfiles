@@ -2,3 +2,6 @@
 # modules/development/editors/helix.nix. themes/noctalia.toml is written by
 # Noctalia, not tracked here.
 theme = "noctalia"
+
+[editor]
+line-number = "relative"
