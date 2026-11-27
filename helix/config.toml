@@ -16,3 +16,4 @@ select = "underline"
 
 [editor.soft-wrap]
 enable = true
+wrap-indicator = "↪ "
